@@ -4,7 +4,7 @@
   "description": "API completa para App Calistreet usando NestJS e Sequelize",
   "main": "main.ts",
   "scripts": {
-    "dev": "ts-node src/main.ts",
+    "dev": "ts-node main.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nest start",
     "start:dev": "nest start --watch"
@@ -23,6 +23,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.6",
     "@nestjs/jwt": "^11.0.0",
+    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.6",
     "@nestjs/sequelize": "^11.0.0",

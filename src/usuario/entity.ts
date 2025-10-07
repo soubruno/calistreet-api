@@ -1,23 +1,39 @@
 import { Table, Column, Model, DataType, HasOne, HasMany } from 'sequelize-typescript';
-import { Profissional } from '../profissional/entity';
+//import { Profissional } from '../profissional/entity';
+// Importação circular para Progresso, Metas, Lembretes, etc. será adicionada depois.
 
-// Enum para o tipo de usuário
+// Enum simples para o tipo de usuário (para o controle de permissão)
 export enum TipoUsuario {
   ALUNO = 'ALUNO',
   PROFISSIONAL = 'PROFISSIONAL',
   ADMIN = 'ADMIN',
 }
 
-// Enum para o Nivelamento 
+// Enum para o Nivelamento (do escopo)
 export enum Nivel {
   INICIANTE = 'INICIANTE',
   INTERMEDIARIO = 'INTERMEDIARIO',
   AVANCADO = 'AVANCADO',
 }
 
+export enum Genero {
+  MASCULINO = 'MASCULINO',
+  FEMININO = 'FEMININO',
+  OUTRO = 'OUTRO', 
+}
+
+export enum Objetivo {
+  RESISTENCIA = 'RESISTENCIA',
+  HIPERTROFIA = 'HIPERTROFIA',
+  MOBILIDADE = 'MOBILIDADE',
+  PERDER_GORDURA = 'PERDER_GORDURA',
+  FRONT_LEVER = 'FRONT_LEVER', // Exemplo de treino específico
+  PLANCHE = 'PLANCHE',
+}
+
 @Table({
   tableName: 'usuarios',
-  timestamps: true, 
+  timestamps: true, // Cria createdAt e updatedAt
 })
 export class Usuario extends Model<Usuario> {
 
@@ -45,11 +61,10 @@ export class Usuario extends Model<Usuario> {
   @Column({
     type: DataType.STRING,
     allowNull: false,
-    select: false, // Não retorna a senha em consultas padrão
   })
   declare senha: string;
 
-  // Tipo de Usuário para controle de Permissões
+  // Tipo de Usuário para controle de Permissões (Requisito 5)
   @Column({
     type: DataType.ENUM(...Object.values(TipoUsuario)),
     allowNull: false,
@@ -57,19 +72,22 @@ export class Usuario extends Model<Usuario> {
   })
   declare tipo: TipoUsuario;
 
-  // --- Dados do Perfil ---
+  // --- Dados do Perfil (do seu escopo) ---
   
   @Column(DataType.FLOAT)
-  declare peso: number; 
+  declare peso: number; // Peso em kg
   
   @Column(DataType.FLOAT)
-  declare altura: number;
+  declare altura: number; // Altura em metros
 
   @Column(DataType.DATEONLY)
   declare dataNasc: Date;
 
-  @Column(DataType.STRING(10))
-  declare genero: string;
+  @Column({
+        type: DataType.ENUM(...Object.values(Genero)),
+        allowNull: true, 
+    })
+  declare genero: Genero; 
   
   @Column({
     type: DataType.ENUM(...Object.values(Nivel)),
@@ -77,17 +95,21 @@ export class Usuario extends Model<Usuario> {
   })
   declare nivelamento: Nivel;
   
-  @Column(DataType.STRING)
-  declare objetivo: string; 
+  @Column({ 
+        type: DataType.ENUM(...Object.values(Objetivo)),
+        allowNull: true,
+    })
+  declare objetivo: Objetivo; 
   
-  @Column(DataType.STRING)
-  declare equipamentos: string;
+  // Campo para armazenar equipamentos (JSONB ou STRING, vamos usar STRING por simplicidade inicial)
+  //@Column(DataType.STRING)
+  //declare equipamentos: string; // Ex: 'argolas,paralela'
 
   // O Profissional associado a este Aluno (se houver)
-  @Column(DataType.UUID)
-  declare profissionalId: string;
+  //@Column(DataType.UUID)
+  //declare profissionalId: string;
 
   // --- Relacionamento: Se for um Profissional, terá uma entrada nesta tabela ---
-  @HasOne(() => Profissional)
-  dadosProfissional: Profissional;
+  //@HasOne(() => Profissional)
+  //dadosProfissional: Profissional;
 }

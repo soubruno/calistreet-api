@@ -1,56 +1,86 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { Usuario } from './entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
+import { FindAllUsuariosDto } from './dto/find-all-usuarios.dto'; 
+import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { UsuarioRepository } from './repository'; // Importação do Repository
 
 @Injectable()
 export class UsuarioService {
   constructor(
-    // Injeção do Model do Sequelize
-    @InjectModel(Usuario)
-    private readonly usuarioModel: typeof Usuario,
+    // Injeção do Repository
+    private readonly usuarioRepository: UsuarioRepository, 
   ) {}
 
-  // Método para criar um novo usuário
+  // 1. Criação de Usuário
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
     
-    // 1. Verificar se o e-mail já está em uso
-    const emailExistente = await this.usuarioModel.findOne({ 
-      where: { email: createUsuarioDto.email } 
-    });
+    // Verificar se o e-mail já está em uso (A lógica de negócio continua no Service)
+    const emailExistente = await this.usuarioRepository.findByEmail(createUsuarioDto.email);
     
     if (emailExistente) {
       throw new ConflictException('O e-mail fornecido já está em uso.');
     }
     
-    // 2. Hash da senha (Segurança)
+    // Hash da senha
     const salt = await bcrypt.genSalt(10);
     const senhaHash = await bcrypt.hash(createUsuarioDto.senha, salt);
 
-    // 3. Criar a instância do usuário
-    const novoUsuario = new Usuario({
+    // Delega a persistência (CREATE) ao Repository
+    const novoUsuario = await this.usuarioRepository.create({
       ...createUsuarioDto,
-      senha: senhaHash, // Armazena a senha hasheada
+      senha: senhaHash, 
     });
-
-    // 4. Salvar no banco de dados
-    await novoUsuario.save();
     
-    const usuarioSemSenha = novoUsuario.toJSON();
-    delete usuarioSemSenha.senha; 
-    
+    // Retorna o objeto (a exclusão de senha é tratada no Repository ou no DTO)
+    const { senha, ...usuarioSemSenha } = novoUsuario.toJSON(); 
     return usuarioSemSenha as Usuario;
   }
   
-  
-  // Método de suporte para a autenticação (buscar pelo e-mail, incluindo a senha)
-  async findByEmail(email: string): Promise<Usuario | null> {
-    return this.usuarioModel.findOne({ 
-      where: { email },
-      attributes: { include: ['senha'] } // Inclui a senha, que é excluída por padrão
-    });
+  // 2. Método de suporte para a autenticação
+  async findByEmailForAuth(email: string): Promise<Usuario | null> {
+    // Delega a busca ao Repository
+    return this.usuarioRepository.findByEmail(email);
   }
 
-  // ... (Outros 5 endpoints do CRUD serão adicionados aqui)
+  // 3. Listagem com Paginação e Filtros
+  async findAll(queryDto: FindAllUsuariosDto): Promise<any> {
+    // Delega a query findAndCountAll ao Repository
+    const { count, rows } = await this.usuarioRepository.findAll(queryDto);
+
+    const page = queryDto.page || 1;
+    const limit = queryDto.limit || 10;
+    
+    // A lógica de formatação da resposta paginada continua no Service
+    return {
+      data: rows,
+      total: count,
+      page: page,
+      limit: limit,
+      totalPages: Math.ceil(count / limit),
+      hasNextPage: page * limit < count,
+    };
+  }
+
+  // 4. Busca por ID
+  async findOne(id: string): Promise<Usuario> {
+      return this.usuarioRepository.findById(id);
+  }
+
+  // 5. Atualização (PUT/PATCH)
+  async update(id: string, updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
+      
+    if (updateUsuarioDto.senha) {
+        const salt = await bcrypt.genSalt(10);
+        updateUsuarioDto.senha = await bcrypt.hash(updateUsuarioDto.senha, salt);
+    }
+
+    return this.usuarioRepository.update(id, updateUsuarioDto);
+  }
+
+  // 6. Exclusão
+  async remove(id: string): Promise<void> {
+      await this.usuarioRepository.remove(id);
+  }
 }
