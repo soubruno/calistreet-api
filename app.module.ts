@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './src/auth/module';
-// import { JwtModule } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 // -------------------------------------------------------------------------
 // 1. IMPORTAÇÃO DE TODAS AS ENTIDADES (MODELS) PARA O SEQUELIZE
 // -------------------------------------------------------------------------
 
 // Entidades Base
 import { Usuario } from './src/usuario/entity';
-//import { Profissional } from './profissional/entity';
+import { Profissional } from './src/profissional/entity';
 
 // Treino e Exercício
 //import { Exercicio } from './exercicio/entity';
@@ -33,7 +33,7 @@ import { Usuario } from './src/usuario/entity';
 // -------------------------------------------------------------------------
 
 import { UsuarioModule } from './src/usuario/module';
-//import { ProfissionalModule } from './profissional/profissional.module';
+import { ProfissionalModule } from './src/profissional/module';
 // Importaremos os demais módulos (Auth, Treino, Progresso, etc.)
 // à medida que os criarmos. Por enquanto, a base:
 //import { AuthModule } from './auth/auth.module';
@@ -72,7 +72,7 @@ import { UsuarioModule } from './src/usuario/module';
         // Lista de todas as entidades do projeto
         models: [
           Usuario, 
-          //Profissional, 
+          Profissional, 
           //Exercicio, 
           //Treino, 
           //TreinoExercicio,
@@ -89,7 +89,7 @@ import { UsuarioModule } from './src/usuario/module';
     
     // Módulos de Funcionalidade
     UsuarioModule,
-    //ProfissionalModule,
+    ProfissionalModule,
     // Próximos módulos a serem adicionados:
     AuthModule,
     // ExercicioModule,

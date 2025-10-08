@@ -26,7 +26,7 @@ import { JwtStrategy } from './jwt.strategy'; // <-- Importe a estratégia
   ],
   controllers: [AuthController],
   // CRÍTICO: O NestJS encontra a estratégia nesta lista
-  providers: [AuthService, JwtStrategy], // <-- DEVE INCLUIR JwtStrategy
+  providers: [AuthService, JwtStrategy],
   exports: [AuthService, JwtModule, JwtStrategy],
 })
 export class AuthModule {}

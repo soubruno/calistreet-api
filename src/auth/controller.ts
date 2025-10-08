@@ -1,5 +1,3 @@
-// src/auth/auth.controller.ts
-
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './service';
