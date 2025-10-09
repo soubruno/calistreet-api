@@ -18,7 +18,7 @@ Siga os passos abaixo para configurar e iniciar o projeto.
 ### Passo 1: Clone o Repositório
 
 ```bash
-git clone [https://github.com/soubruno/calistreet-api](https://github.com/soubruno/calistreet-api)
+git clone https://github.com/soubruno/calistreet-api
 cd calistreet-api
 ```
 
@@ -43,3 +43,109 @@ cp .env.example .env
 ```bash
 npm start dev
 ```
+
+## 🌐 Acesso à API e Documentação
+
+### Documentação (Swagger)
+
+Acesse a documentação completa da API (CRUD, listagens com filtros/paginação, autenticação e permissões) no seguinte endereço:
+
+```bash
+http://localhost:3000/api/docs
+```
+
+### Fluxo de Teste Interativo
+
+Para interagir com os endpoints protegidos, como os de gerenciamento de usuários, exercícios ou profissionais, você precisa seguir o fluxo de Autenticação e Autorização.
+
+#### Passo 1: Criar um Usuário Administrador (Admin)
+
+Para ter acesso a todos os endpoints, é recomendável criar um usuário com o papel de ADMIN.
+
+    No Swagger, encontre o endpoint POST /usuarios (Criar Usuário).
+
+    Clique em "Try it out".
+
+    No campo Request body, utilize um JSON semelhante a este, garantindo que o campo tipo seja "ADMIN":
+
+```bash
+{
+  "nome": "Admin",
+  "email": "admin@calistreet.com",
+  "senha": "Senha123",
+  "tipo": "ADMIN" 
+}
+```
+
+Clique em "Execute". Você deve receber um Response code 201.
+
+#### Passo 2: Obter o Token de Acesso (Login)
+
+Agora, você deve fazer login para receber o token JWT.
+
+    Encontre o endpoint POST /auth/login.
+
+    Clique em "Try it out".
+
+    No campo Request body, insira as credenciais que você acabou de criar:
+
+```bash
+{
+  "email": "admin@calistreet.com",
+  "senha": "SenhaForte123"
+}
+```
+
+    Clique em "Execute". O corpo da resposta (Response body) conterá o seu access_token. Copie o valor completo do token.
+
+#### Passo 3: Autorizar o Swagger (Usar o Token)
+
+Este passo é crucial para testar qualquer endpoint protegido por AuthGuard('jwt').
+
+    No topo da página do Swagger, localize o botão "Authorize" ou o ícone de cadeado.
+
+    Clique nele.
+
+    Na janela que se abre (geralmente chamada BearerAuth), cole o token que você copiou no Passo 2, precedido pela palavra Bearer e um espaço.
+
+    Exemplo: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    Clique em "Authorize" e feche a janela. O ícone de cadeado nos endpoints deve agora aparecer fechado, indicando que você está autenticado.
+
+#### Passo 4: Testar Permissões e Funcionalidades
+
+Agora que você está autenticado como ADMIN, pode testar qualquer endpoint, incluindo aqueles que requerem permissões mais elevadas.
+
+##### Teste 1: Crie um novo usuário para simular um aluno.
+
+    Criar o Aluno:
+    No Swagger, encontre o endpoint POST /usuarios.
+
+    Clique em "Try it out".
+
+    No campo Request body, utilize o JSON abaixo. Note que o campo "tipo" é opcional e, se omitido (ou se você usar "ALUNO"), o usuário será um Aluno: 
+
+```bash
+{
+  "nome": "João Aluno",
+  "email": "joao@aluno.com",
+  "senha": "SenhaAluno123"
+}
+```
+    Clique em "Execute". O corpo da resposta retornará o id do novo usuário. Guarde este ID.
+
+##### Teste 2: Exclua esse usuário.
+
+    Navegue até a seção Usuario no Swagger.
+
+    Encontre o endpoint DELETE /usuarios/{id}.
+
+    Clique em "Try it out".
+
+    No campo id do Path Parameter, insira o ID do usuário ALUNO que você deseja apagar.
+
+        - Exemplo: c628f86f-2399-4c17-9c98-1e42b26002f2
+
+    Clique em "Execute".
+
+    Resultado Esperado (Sucesso): O código de resposta deve ser 204 No Content, indicando que a operação foi bem-sucedida porque o seu token tem a permissão ADMIN necessária.
