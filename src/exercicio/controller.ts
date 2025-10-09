@@ -112,7 +112,6 @@ export class ExercicioController {
   }
 
   // 11. GET /exercicios/grupos/:grupo (Listar subgrupos)
-  // Exemplo: GET /exercicios/grupos/SUPERIOR	
   @Get('grupos/:grupo')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Lista todos os subgrupos musculares (ex: PEITO, OMBRO).' })
@@ -120,8 +119,7 @@ export class ExercicioController {
       return this.exercicioService.getSubgrupos(grupo);
   }
   
-  // 12. GET /exercicios/grupos/:grupo/:subgrupo (Filtro combinado)
-  // Exemplo: GET /exercicios/grupos/SUPERIOR/PEITO
+  // 12. GET /exercicios/grupos/:grupo/:subgrupo (Lista por subgrupo)
   @Get('grupos/:grupo/:subgrupo')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Lista exercícios por Grupo e Subgrupo (Filtro Combinado).' })

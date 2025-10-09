@@ -13,8 +13,8 @@ import { Profissional } from './src/profissional/entity';
 
 // Treino e Exercício
 import { Exercicio } from './src/exercicio/entity';
-//import { Treino } from './treino/entity';
-//import { TreinoExercicio } from './treino/treino-exercicio.entity';
+import { Treino } from './src/treino/entity';
+import { TreinoExercicio } from './src/treino/treino-exercicio.entity';
 import { UsuarioExercicioFavorito } from './src/exercicio/usuario-exercicio-favorito.entity';
 
 // Progresso e Histórico
@@ -38,7 +38,7 @@ import { ProfissionalModule } from './src/profissional/module';
 // à medida que os criarmos. Por enquanto, a base:
 //import { AuthModule } from './auth/auth.module';
 import { ExercicioModule } from './src/exercicio/module';
-// import { TreinoModule } from './treino/treino.module';
+import { TreinoModule } from './src/treino/module';
 // import { ProgressoModule } from './progresso/progresso.module';
 
 
@@ -74,8 +74,8 @@ import { ExercicioModule } from './src/exercicio/module';
           Usuario, 
           Profissional, 
           Exercicio, 
-          //Treino, 
-          //TreinoExercicio,
+          Treino, 
+          TreinoExercicio,
           UsuarioExercicioFavorito,
           //Progresso,
           //ProgressoExercicio,
@@ -93,7 +93,7 @@ import { ExercicioModule } from './src/exercicio/module';
     // Próximos módulos a serem adicionados:
     AuthModule,
     ExercicioModule,
-    // TreinoModule,
+    TreinoModule,
     // ProgressoModule,
   ]
 })
