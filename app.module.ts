@@ -12,10 +12,10 @@ import { Usuario } from './src/usuario/entity';
 import { Profissional } from './src/profissional/entity';
 
 // Treino e Exercício
-//import { Exercicio } from './exercicio/entity';
+import { Exercicio } from './src/exercicio/entity';
 //import { Treino } from './treino/entity';
 //import { TreinoExercicio } from './treino/treino-exercicio.entity';
-//import { UsuarioExercicioFavorito } from './exercicio/usuario-exercicio-favorito.entity';
+import { UsuarioExercicioFavorito } from './src/exercicio/usuario-exercicio-favorito.entity';
 
 // Progresso e Histórico
 //import { Progresso } from './progresso/progresso.entity';
@@ -37,7 +37,7 @@ import { ProfissionalModule } from './src/profissional/module';
 // Importaremos os demais módulos (Auth, Treino, Progresso, etc.)
 // à medida que os criarmos. Por enquanto, a base:
 //import { AuthModule } from './auth/auth.module';
-// import { ExercicioModule } from './exercicio/exercicio.module';
+import { ExercicioModule } from './src/exercicio/module';
 // import { TreinoModule } from './treino/treino.module';
 // import { ProgressoModule } from './progresso/progresso.module';
 
@@ -73,10 +73,10 @@ import { ProfissionalModule } from './src/profissional/module';
         models: [
           Usuario, 
           Profissional, 
-          //Exercicio, 
+          Exercicio, 
           //Treino, 
           //TreinoExercicio,
-          //UsuarioExercicioFavorito,
+          UsuarioExercicioFavorito,
           //Progresso,
           //ProgressoExercicio,
           //MedidaFisica,
@@ -92,7 +92,7 @@ import { ProfissionalModule } from './src/profissional/module';
     ProfissionalModule,
     // Próximos módulos a serem adicionados:
     AuthModule,
-    // ExercicioModule,
+    ExercicioModule,
     // TreinoModule,
     // ProgressoModule,
   ]
