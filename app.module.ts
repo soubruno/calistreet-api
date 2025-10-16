@@ -18,9 +18,9 @@ import { TreinoExercicio } from './src/treino/treino-exercicio.entity';
 import { UsuarioExercicioFavorito } from './src/exercicio/usuario-exercicio-favorito.entity';
 
 // Progresso e Histórico
-//import { Progresso } from './progresso/progresso.entity';
-//import { ProgressoExercicio } from './progresso/progresso-exercicio.entity';
-//import { MedidaFisica } from './progresso/medida-fisica.entity';
+import { Progresso } from './src/progresso/entity';
+import { ProgressoExercicio } from './src/progresso/progresso-exercicio.entity';
+import { MedidaFisica } from './src/progresso/medida-fisica.entity';
 //import { Lembrete } from './lembrete/lembrete.entity';
 
 // Conquistas
@@ -36,10 +36,9 @@ import { UsuarioModule } from './src/usuario/module';
 import { ProfissionalModule } from './src/profissional/module';
 // Importaremos os demais módulos (Auth, Treino, Progresso, etc.)
 // à medida que os criarmos. Por enquanto, a base:
-//import { AuthModule } from './auth/auth.module';
 import { ExercicioModule } from './src/exercicio/module';
 import { TreinoModule } from './src/treino/module';
-// import { ProgressoModule } from './progresso/progresso.module';
+import { ProgressoModule } from './src/progresso/module';
 
 
 @Module({
@@ -77,9 +76,9 @@ import { TreinoModule } from './src/treino/module';
           Treino, 
           TreinoExercicio,
           UsuarioExercicioFavorito,
-          //Progresso,
-          //ProgressoExercicio,
-          //MedidaFisica,
+          Progresso,
+          ProgressoExercicio,
+          MedidaFisica,
           //Lembrete,
           //Conquista,
           //UsuarioConquista,
@@ -94,7 +93,7 @@ import { TreinoModule } from './src/treino/module';
     AuthModule,
     ExercicioModule,
     TreinoModule,
-    // ProgressoModule,
+    ProgressoModule,
   ]
 })
 export class AppModule {}
