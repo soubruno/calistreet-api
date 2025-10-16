@@ -21,7 +21,7 @@ import { UsuarioExercicioFavorito } from './src/exercicio/usuario-exercicio-favo
 import { Progresso } from './src/progresso/entity';
 import { ProgressoExercicio } from './src/progresso/progresso-exercicio.entity';
 import { MedidaFisica } from './src/progresso/medida-fisica.entity';
-//import { Lembrete } from './lembrete/lembrete.entity';
+import { Lembrete } from './src/lembrete/entity';
 
 // Conquistas
 //import { Conquista } from './conquista/conquista.entity';
@@ -39,6 +39,7 @@ import { ProfissionalModule } from './src/profissional/module';
 import { ExercicioModule } from './src/exercicio/module';
 import { TreinoModule } from './src/treino/module';
 import { ProgressoModule } from './src/progresso/module';
+import { LembreteModule } from './src/lembrete/module';
 
 
 @Module({
@@ -79,7 +80,7 @@ import { ProgressoModule } from './src/progresso/module';
           Progresso,
           ProgressoExercicio,
           MedidaFisica,
-          //Lembrete,
+          Lembrete,
           //Conquista,
           //UsuarioConquista,
         ],
@@ -94,6 +95,7 @@ import { ProgressoModule } from './src/progresso/module';
     ExercicioModule,
     TreinoModule,
     ProgressoModule,
+    LembreteModule,
   ]
 })
 export class AppModule {}
