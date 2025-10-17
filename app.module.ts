@@ -24,8 +24,8 @@ import { MedidaFisica } from './src/progresso/medida-fisica.entity';
 import { Lembrete } from './src/lembrete/entity';
 
 // Conquistas
-//import { Conquista } from './conquista/conquista.entity';
-//import { UsuarioConquista } from './conquista/usuario-conquista.entity';
+import { Conquista } from './src/conquista/entity';
+import { UsuarioConquista } from './src/conquista/usuario-conquista.entity';
 
 
 // -------------------------------------------------------------------------
@@ -40,7 +40,8 @@ import { ExercicioModule } from './src/exercicio/module';
 import { TreinoModule } from './src/treino/module';
 import { ProgressoModule } from './src/progresso/module';
 import { LembreteModule } from './src/lembrete/module';
-
+import { ConquistaModule } from './src/conquista/module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -81,13 +82,14 @@ import { LembreteModule } from './src/lembrete/module';
           ProgressoExercicio,
           MedidaFisica,
           Lembrete,
-          //Conquista,
-          //UsuarioConquista,
+          Conquista,
+          UsuarioConquista,
         ],
       }),
     }),
     
     // Módulos de Funcionalidade
+    EventEmitterModule.forRoot(),
     UsuarioModule,
     ProfissionalModule,
     // Próximos módulos a serem adicionados:
@@ -96,6 +98,7 @@ import { LembreteModule } from './src/lembrete/module';
     TreinoModule,
     ProgressoModule,
     LembreteModule,
+    ConquistaModule,
   ]
 })
 export class AppModule {}
