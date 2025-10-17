@@ -8,6 +8,8 @@ import { UsuarioService } from '../usuario/service'; // Para checagem de permiss
 import { ExercicioService } from '../exercicio/service'; // Para validação de exercícios
 import { isUUID } from 'class-validator';
 import { Progresso } from './entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { ConquistaRepository } from '../conquista/repository';
 
 @Injectable()
 export class ProgressoService {
@@ -16,6 +18,8 @@ export class ProgressoService {
         private readonly treinoService: TreinoService,
         private readonly usuarioService: UsuarioService,
         private readonly exercicioService: ExercicioService,
+        private readonly eventEmitter: EventEmitter2,
+        private readonly conquistaRepository: ConquistaRepository,
     ) {}
 
     // --- 1. Histórico de Sessões de Treino (Progresso) ---
@@ -46,7 +50,17 @@ export class ProgressoService {
         }
 
         // Delega a criação transacional (Sessão + Resultados) ao Repository
-        return this.progressoRepository.create(createProgressoDto, usuarioId);
+        const novaSessao = await this.progressoRepository.create(createProgressoDto, usuarioId);
+
+        this.eventEmitter.emit('progresso.treino.concluido', {
+            usuarioId: usuarioId,
+            sessaoId: novaSessao.id,
+            duracao: novaSessao.duracaoSegundos,
+            status: novaSessao.status,
+        });
+
+        return novaSessao;
+
     }
 
     /**
@@ -188,11 +202,14 @@ export class ProgressoService {
      * GET /progresso/conquistas - Lista as conquistas obtidas (Integração futura).
      */
     async getConquistas(usuarioId: string): Promise<any> {
-        // Esta lógica será implementada no módulo Conquistas, por enquanto retorna um placeholder
+        
+        // Chamar o Repository de Conquistas para obter a lista real
+        const conquistas = await this.conquistaRepository.findUnlockedByUser(usuarioId);
+        
         return {
             usuarioId,
-            conquistasObtidas: [], // Dados viriam do ProgressoRepository ou ConquistaService
-            mensagem: "Funcionalidade de Conquistas pronta para ser integrada."
+            conquistasObtidas: conquistas, // <<< DADOS REAIS
+            mensagem: "Sucesso na leitura das conquistas."
         };
     }
 }

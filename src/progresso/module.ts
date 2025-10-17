@@ -9,16 +9,18 @@ import { ProgressoRepository } from './repository';
 import { UsuarioModule } from '../usuario/module'; // Necessário para MedidaFisica
 import { TreinoModule } from '../treino/module'; // Necessário para relacionamentos e dados de Treino
 import { ExercicioModule } from '../exercicio/module'; // Necessário para resultados de exercícios
+import { ConquistaModule } from '../conquista/module';
 
 @Module({
   imports: [
     // 1. Registra as entidades do módulo Progresso
     SequelizeModule.forFeature([Progresso, ProgressoExercicio, MedidaFisica]),
     
-    // 2. Importações CRÍTICAS (usando forwardRef para evitar ciclos)
+    // 2. Importações (usando forwardRef para evitar ciclos)
     forwardRef(() => UsuarioModule),
     forwardRef(() => TreinoModule),
     forwardRef(() => ExercicioModule),
+    forwardRef(() => ConquistaModule),
   ],
   controllers: [ProgressoController],
   providers: [ProgressoService, ProgressoRepository],
