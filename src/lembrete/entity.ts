@@ -44,21 +44,21 @@ export class Lembrete extends Model<Lembrete> {
     type: DataType.ENUM(...Object.values(DiaSemana)),
     allowNull: false,
   })
-  declare diaSemana: DiaSemana; // O dia agendado (Filtro 2)
+  declare diaSemana: DiaSemana;
 
   @Column({
-    type: DataType.TIME, // Armazena apenas o horário (Ex: '19:00:00')
+    type: DataType.TIME,
     allowNull: false,
   })
-  declare hora: string; // Ex: '19:00:00' (Filtro 1)
+  declare hora: string;
 
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: true,
   })
-  declare ativo: boolean; // Para ligar/desligar o lembrete
+  declare ativo: boolean;
   
   // --- PONTO DE INTEGRAÇÃO BÔNUS (Filas) ---
-  @Column(DataType.STRING)
-  declare jobId: string; // ID da tarefa na Fila (BullMQ/Redis) para cancelamento.
+  //@Column(DataType.STRING)
+  //declare jobId: string; // ID da tarefa na Fila (BullMQ/Redis) para cancelamento.
 }

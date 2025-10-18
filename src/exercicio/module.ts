@@ -12,6 +12,6 @@ import { ExercicioRepository } from './repository';
   ],
   controllers: [ExercicioController],
   providers: [ExercicioService, ExercicioRepository],
-  exports: [ExercicioService, ExercicioRepository], // Exportamos para o Módulo Treino
+  exports: [ExercicioService, ExercicioRepository],
 })
 export class ExercicioModule {}

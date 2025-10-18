@@ -5,7 +5,7 @@ import { Exercicio } from './entity';
 import { CreateExercicioDto } from './dto/create-exercicio.dto';
 import { UpdateExercicioDto } from './dto/update-exercicio.dto';
 import { FindAllExerciciosDto } from './dto/find-all-exercicios.dto';
-import { Usuario } from '../usuario/entity'; // Para a tabela M:N
+import { Usuario } from '../usuario/entity';
 import { UsuarioExercicioFavorito } from './usuario-exercicio-favorito.entity';
 
 @Injectable()
@@ -20,11 +20,10 @@ export class ExercicioRepository {
   // --- CRUD Básico ---
   
   async create(data: CreateExercicioDto): Promise<Exercicio> {
-    // Note: A checagem de nome duplicado (unique: true) será tratada no Service/DB
     return this.exercicioModel.create(data as Exercicio);
   }
 
-  async findByName(nome: string): Promise<Exercicio | null> { // <<< NOVO MÉTODO
+  async findByName(nome: string): Promise<Exercicio | null> {
     return this.exercicioModel.findOne({ where: { nome } });
   }
 
@@ -66,7 +65,6 @@ export class ExercicioRepository {
     if (queryDto.subgrupoMuscular) {
         whereCondition.subgrupoMuscular = queryDto.subgrupoMuscular;
     }
-    // Filtro por equipamento (busca parcial)
     if (queryDto.equipamentos) {
         whereCondition.equipamentosNecessarios = { [Op.iLike]: `%${queryDto.equipamentos}%` };
     }
@@ -84,7 +82,7 @@ export class ExercicioRepository {
                 attributes: ['usuarioId'],
                 where: { usuarioId }, // Filtra apenas o favorito deste usuário
             },
-            required: false // LEFT JOIN para listar todos os exercícios, mesmo os não favoritos
+            required: false
         });
     }
 
@@ -116,13 +114,12 @@ export class ExercicioRepository {
     const limit = queryDto.limit || 10;
     const offset = ((queryDto.page || 1) - 1) * limit;
 
-    // Define a cláusula INCLUDE e a tipa corretamente
     const includeClause: any[] = [{
       model: Usuario,
       as: 'usuariosFavoritaram',
       attributes: [],
       through: {
-        model: UsuarioExercicioFavorito, // Aqui o tipo é resolvido mais facilmente
+        model: UsuarioExercicioFavorito,
         where: { usuarioId },
       },
       required: true 
@@ -133,7 +130,7 @@ export class ExercicioRepository {
       limit,
       offset,
       order: [['nome', 'ASC']],
-      include: includeClause, // Usamos a cláusula tipada
+      include: includeClause,
     });
   }
 }

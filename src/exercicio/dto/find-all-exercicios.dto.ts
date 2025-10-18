@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto'; 
 import { GrupoMuscular, SubgrupoMuscular } from '../entity';
 
-// DTO para filtros do catálogo de exercícios
 export class FindAllExerciciosDto extends PaginationQueryDto {
     
     @IsOptional()

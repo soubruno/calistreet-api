@@ -1,12 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
 import { Conquista, TipoConquista } from './entity';
 import { UsuarioConquista } from './usuario-conquista.entity';
 import { CreateConquistaDto } from './dto/create-conquista.dto';
 import { UpdateConquistaDto } from './dto/update-conquista.dto';
 import { FindAllConquistasDto } from './dto/find-all-conquistas.dto';
-import { Usuario } from '../usuario/entity'; // Para o relacionamento M:N
+import { Usuario } from '../usuario/entity';
 
 @Injectable()
 export class ConquistaRepository {
@@ -87,7 +86,6 @@ export class ConquistaRepository {
 
   /**
    * Lista as conquistas que um usuário ESPECÍFICO desbloqueou.
-   * Este método será usado pelo GET /progresso/conquistas.
    */
   async findUnlockedByUser(usuarioId: string): Promise<Conquista[]> {
 

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Conquista } from './entity';
 import { UsuarioConquista } from './usuario-conquista.entity';
@@ -10,7 +10,7 @@ import { UsuarioModule } from '../usuario/module';
 @Module({
   imports: [
     SequelizeModule.forFeature([Conquista, UsuarioConquista]),
-    UsuarioModule, 
+    forwardRef(() => UsuarioModule),
   ],
   controllers: [ConquistaController],
   providers: [ConquistaService, ConquistaRepository],

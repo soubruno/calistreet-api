@@ -1,6 +1,6 @@
 import { Table, Column, Model, DataType, BelongsToMany } from 'sequelize-typescript';
-import { Usuario } from '../usuario/entity'; // Necessário para o relacionamento Favoritos
-import { UsuarioExercicioFavorito } from './usuario-exercicio-favorito.entity'; // Tabela de junção
+import { Usuario } from '../usuario/entity';
+import { UsuarioExercicioFavorito } from './usuario-exercicio-favorito.entity';
 
 // Enums para Grupos e Subgrupos Musculares (para filtros)
 export enum GrupoMuscular {
@@ -46,21 +46,18 @@ export class Exercicio extends Model<Exercicio> {
   @Column(DataType.TEXT)
   declare descricao: string; 
   
-  // Campo de Filtro 
   @Column({
     type: DataType.ENUM(...Object.values(GrupoMuscular)),
     allowNull: false,
   })
   declare grupoMuscular: GrupoMuscular;
-
-  // Campo de Filtro 
+ 
   @Column({
     type: DataType.ENUM(...Object.values(SubgrupoMuscular)),
     allowNull: true, 
   })
   declare subgrupoMuscular: SubgrupoMuscular;
 
-  // Campo de Filtro 
   @Column(DataType.STRING)
   declare equipamentosNecessarios: string; 
 

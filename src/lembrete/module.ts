@@ -6,13 +6,11 @@ import { Lembrete } from './entity';
 import { LembreteService } from './service';
 import { LembreteController } from './controller';
 import { LembreteRepository } from './repository';
-import { UsuarioModule } from '../usuario/module'; // Importado para garantir a injeção do Usuario
+import { UsuarioModule } from '../usuario/module';
 
 @Module({
   imports: [
-    // 1. Registra a entidade Lembrete
     SequelizeModule.forFeature([Lembrete]),
-    // 2. Importa o módulo de Usuário (opcional, mas bom para coesão)
     UsuarioModule, 
   ],
   controllers: [LembreteController],

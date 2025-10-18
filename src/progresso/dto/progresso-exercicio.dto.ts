@@ -1,4 +1,4 @@
-import { IsUUID, IsInt, Min, IsString, IsOptional, IsNumber, Max } from 'class-validator';
+import { IsUUID, IsInt, Min, IsString, IsOptional, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ProgressoExercicioDto {

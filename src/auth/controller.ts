@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './service';
 import { LoginDto } from './dto/login.dto';
 
+
 @ApiTags('Autenticação')
 @Controller('auth')
 export class AuthController {
@@ -11,7 +12,6 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Autentica um usuário e retorna um token JWT.' })
-  // ... (ApiResponse para documentação)
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }

@@ -5,7 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RelatoriosService } from './service';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { TipoUsuario } from '../usuario/entity'; // Para permissões
+import { TipoUsuario } from '../usuario/entity';
 
 @ApiTags('Relatórios & Estatísticas Finais') 
 @ApiBearerAuth()
@@ -17,7 +17,7 @@ export class RelatoriosController {
   // 1. GET /relatorios/geral (Visão Global)
   @Get('geral')
   @Roles(TipoUsuario.ADMIN) // Apenas administradores veem a visão geral
-  @UseInterceptors(CacheInterceptor) // Cache Ativado para esta query pesada
+  @UseInterceptors(CacheInterceptor) // Cache Ativado
   @ApiOperation({ summary: 'Retorna estatísticas globais da plataforma (Admin only).' })
   async getGeral(): Promise<any> {
     return this.relatoriosService.getGeral();
@@ -37,7 +37,6 @@ export class RelatoriosController {
   @ApiOperation({ summary: 'Retorna o histórico de peso e medidas (para fins nutricionais).' })
   async getRelatorioNutricao(@Req() req: any): Promise<any> {
     const usuarioId = req.user.id;
-    // Isso é atendido pelo ProgressoService.findAllMedidas/compararProgresso
     return this.relatoriosService.getRelatorioNutricao(usuarioId);
   }
   
@@ -54,10 +53,9 @@ export class RelatoriosController {
   
   // 5. GET /relatorios/tendencias (Análise de Tendência de Longo Prazo)
   @Get('tendencias')
-  @UseInterceptors(CacheInterceptor) // Cache
+  @UseInterceptors(CacheInterceptor) // Cache Ativado
   @ApiOperation({ summary: 'Análise de tendências de performance ao longo de 6 meses.' })
   async getTendencias(@Req() req: any): Promise<any> {
-      // Isso seria um GET /progresso/estatisticas mais profundo
       const usuarioId = req.user.id;
       return { message: "Tendências de performance para 6 meses" };
   }

@@ -5,14 +5,8 @@ import { IsOptional, ValidateNested, IsArray } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
-/**
- * DTO para atualização parcial de uma Sessão de Progresso.
- * Herda CreateProgressoDto e torna todos os campos opcionais.
- */
 export class UpdateProgressoDto extends PartialType(CreateProgressoDto) {
     
-    // Sobrescrevemos 'resultadosExercicios' para garantir que a atualização
-    // de sub-recursos (itens) seja tratada separadamente, se necessário.
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })

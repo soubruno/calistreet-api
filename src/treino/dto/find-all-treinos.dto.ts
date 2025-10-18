@@ -1,13 +1,8 @@
-import { IsOptional, IsEnum, IsUUID, IsBoolean, IsString } from 'class-validator';
+import { IsOptional, IsEnum, IsUUID, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto'; 
 import { Nivel } from '../../usuario/entity'; 
 
-/**
- * DTO para listagem de Treinos.
- * Herda a Paginação (page, limit).
- */
 export class FindAllTreinosDto extends PaginationQueryDto {
     
     @IsOptional()

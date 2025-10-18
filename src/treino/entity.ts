@@ -1,7 +1,7 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsTo, HasMany, BelongsToMany } from 'sequelize-typescript';
-import { Usuario, Nivel } from '../usuario/entity'; // Reutiliza Nivel
-import { Exercicio } from '../exercicio/entity'; // Necessário para o relacionamento
-import { TreinoExercicio } from './treino-exercicio.entity'; // Tabela de junção
+import { Usuario, Nivel } from '../usuario/entity';
+import { Exercicio } from '../exercicio/entity';
+import { TreinoExercicio } from './treino-exercicio.entity';
 
 @Table({
   tableName: 'treinos',
@@ -56,7 +56,7 @@ export class Treino extends Model<Treino> {
   @HasMany(() => TreinoExercicio)
   declare itens: TreinoExercicio[]; 
 
-  // Futura relação 1:N com Progresso (Histórico)
+  // Relação 1:N com Progresso (Histórico)
   // @HasMany(() => Progresso)
   // historico: Progresso[]; 
 }

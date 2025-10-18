@@ -3,7 +3,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { Nivel } from '../../usuario/entity';
 
-// DTO para cada item de exercício dentro do treino (Prescrição)
 export class TreinoItemDto {
     @IsUUID()
     @ApiProperty({ description: 'ID do exercício do catálogo.' })
@@ -32,7 +31,6 @@ export class TreinoItemDto {
 }
 
 
-// DTO principal para criar o Treino
 export class CreateTreinoDto {
     @IsString({ message: 'O nome do treino é obrigatório.' })
     @IsNotEmpty()

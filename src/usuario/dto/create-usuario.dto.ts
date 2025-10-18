@@ -1,5 +1,3 @@
-// src/usuario/dto/create-usuario.dto.ts
-
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsNumber, IsIn } from 'class-validator';
 import { TipoUsuario, Nivel, Genero, Objetivo } from '../entity';
 
@@ -17,8 +15,7 @@ export class CreateUsuarioDto {
   @MinLength(6, { message: 'A senha deve ter pelo menos 6 caracteres.' })
   declare senha: string;
 
-  // O tipo de usuário padrão será ALUNO, mas permitimos a criação de PROFISSIONAIS e ADMINS
-  // (Este campo será validado por um Guard de permissão mais tarde, se não for ADMIN).
+  // O tipo de usuário padrão será ALUNO, mas é permitida a criação de PROFISSIONAIS e ADMINS
   @IsOptional()
   @IsIn(Object.values(TipoUsuario), { message: 'Tipo de usuário inválido.' })
   declare tipo: TipoUsuario;

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, IsOptional, IsEnum, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { GrupoMuscular, SubgrupoMuscular } from '../entity'; // Importa os Enums
+import { GrupoMuscular, SubgrupoMuscular } from '../entity';
 
 export class CreateExercicioDto {
   

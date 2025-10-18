@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { TreinoRepository } from './repository';
 import { CreateTreinoDto, TreinoItemDto } from './dto/create-treino.dto';
 import { UpdateTreinoDto } from './dto/update-treino.dto';
-import { ExercicioService } from '../exercicio/service'; // Para validar IDs de exercícios
+import { ExercicioService } from '../exercicio/service';
 import { Treino } from './entity';
 import { UsuarioService } from '../usuario/service';
 import { TipoUsuario } from '../common/enums/tipo-usuario.enum';
@@ -11,7 +11,7 @@ import { TipoUsuario } from '../common/enums/tipo-usuario.enum';
 export class TreinoService {
     constructor(
         private readonly treinoRepository: TreinoRepository,
-        private readonly exercicioService: ExercicioService, // Injetado para validação
+        private readonly exercicioService: ExercicioService,
         private readonly usuarioService: UsuarioService,         
     ) {}
 
@@ -24,10 +24,8 @@ export class TreinoService {
         
         for (const id of exercicioIds) {
             try {
-                // Tenta buscar cada ID no módulo Exercício (garante que não enviaram IDs inválidos)
                 await this.exercicioService.findOne(id); 
             } catch (e) {
-                // Se o findOne lançar NotFoundException, a criação falha
                 throw new BadRequestException(`O exercício com ID ${id} é inválido ou não existe.`);
             }
         }
@@ -36,7 +34,7 @@ export class TreinoService {
         
         let isTemplate = false;
         
-        // Regra de Negócio: Apenas ADMIN ou PROFISSIONAL pode criar templates (se o DTO pedir)
+        // Regra de Negócio: Apenas ADMIN ou PROFISSIONAL pode criar templates
         if (createTreinoDto.isTemplate && 
             (usuarioLogado.tipo === TipoUsuario.ADMIN || usuarioLogado.tipo === TipoUsuario.PROFISSIONAL)) {
             isTemplate = true;
@@ -45,7 +43,7 @@ export class TreinoService {
         // 3. Delega a criação transacional
         return this.treinoRepository.create({
             ...createTreinoDto,
-            isTemplate: isTemplate, // Usa o valor ajustado pela permissão
+            isTemplate: isTemplate,
             criadoPorId,
         });
     }
@@ -56,15 +54,12 @@ export class TreinoService {
 
     /**
      * 3. Atualiza o Treino e seus Itens (PUT /treinos/:id).
-     * @param treinoId ID do treino a ser atualizado.
-     * @param data DTO de atualização.
-     * @param usuarioLogadoId ID do usuário logado (para checagem de permissão).
      */
     async update(treinoId: string, data: UpdateTreinoDto, usuarioLogadoId: string): Promise<Treino> {
         
         // 1. Checagem de Permissão de Edição
         const treinoExistente = await this.treinoRepository.findById(treinoId);
-        const usuarioLogado = await this.usuarioService.findOne(usuarioLogadoId); // Busca o usuário logado
+        const usuarioLogado = await this.usuarioService.findOne(usuarioLogadoId);
 
         // Regra de Negócio: Somente o criador OU um ADMIN pode editar
         const isCriador = treinoExistente.criadoPorId === usuarioLogadoId;
@@ -102,8 +97,6 @@ export class TreinoService {
 
     /**
      * 4. Remove o Treino e seus Itens (DELETE /treinos/:id).
-     * @param treinoId ID do treino.
-     * @param usuarioLogadoId ID do usuário logado (para checagem de permissão).
      */
     async remove(treinoId: string, usuarioLogadoId: string): Promise<void> {
         const treinoExistente = await this.treinoRepository.findById(treinoId);

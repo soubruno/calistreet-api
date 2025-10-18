@@ -20,24 +20,18 @@ export class TreinoRepository {
 
   /**
    * Cria o Treino e todos os seus itens (transacionalmente).
-   * @param data Dados do treino.
-   * @param criadoPorId ID do usuário que está criando o treino.
    */
   async create(data: CreateTreinoDto & { isTemplate: boolean, criadoPorId: string }): Promise<Treino> {
     
-    // 1. Cria o registro principal do Treino
     const novoTreino = await this.treinoModel.create(data as Treino);
 
-    // 2. Mapeia os itens do DTO para a tabela de junção (TreinoExercicio)
     const itens = data.itens.map(item => ({
       ...item,
       treinoId: novoTreino.id,
     }));
 
-    // 3. Cria todos os itens de prescrição em lote
     await this.treinoExercicioModel.bulkCreate(itens as TreinoExercicio[]);
 
-    // 4. Retorna o objeto completo com os itens
     return this.findById(novoTreino.id);
   }
 
@@ -49,7 +43,7 @@ export class TreinoRepository {
       include: [
         {
           model: TreinoExercicio,
-          as: 'itens', // Relação HasMany
+          as: 'itens',
           include: [{ model: Exercicio, attributes: ['id', 'nome', 'grupoMuscular', 'videoUrl'] }],
         },
       ],
@@ -74,10 +68,8 @@ export class TreinoRepository {
    */
   async syncItens(treinoId: string, itens: any[]): Promise<void> {
     
-    // 1. Remove os antigos
     await this.treinoExercicioModel.destroy({ where: { treinoId } });
 
-    // 2. Cria os novos
     await this.treinoExercicioModel.bulkCreate(itens as any);
   }
 
@@ -85,9 +77,8 @@ export class TreinoRepository {
    * 3. Atualiza o Treino principal (sem os itens).
    */
   async update(treinoId: string, data: Partial<Treino>): Promise<Treino> {
+
     const treino = await this.findById(treinoId);
-    
-    // Usamos 'as any' para contornar a tipagem estrita do DTO/Partial
     await treino.update(data as any); 
     return treino;
   }
@@ -96,10 +87,8 @@ export class TreinoRepository {
    * 4. Remove o Treino principal e seus itens associados.
    */
   async remove(treinoId: string): Promise<void> {
-    // Nota: Se a FK for ON DELETE CASCADE, remover o Treino principal já remove os itens.
-    // Mas faremos a exclusão explícita para robustez.
     
-    await this.removeItens(treinoId); // Remove os itens primeiro
+    await this.removeItens(treinoId);
     const result = await this.treinoModel.destroy({ where: { id: treinoId } });
     
     if (result === 0) {

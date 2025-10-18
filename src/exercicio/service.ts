@@ -14,7 +14,7 @@ export class ExercicioService {
     // --- CRUD Básico ---
 
     async create(createExercicioDto: CreateExercicioDto): Promise<Exercicio> {
-        // Verificar se o nome do exercício já existe (para unique: true)
+        
         const existe = await this.exercicioRepository.findByName(createExercicioDto.nome); 
         
         if (existe) {
@@ -35,12 +35,11 @@ export class ExercicioService {
         await this.exercicioRepository.remove(id);
     }
 
-    // --- Listagem e Favoritos (12 Endpoints) ---
+    // --- Listagem e Favoritos ---
 
     async findAll(queryDto: FindAllExerciciosDto, usuarioId?: string): Promise<any> {
         const { count, rows } = await this.exercicioRepository.findAll(queryDto, usuarioId);
 
-        // Lógica de Paginação (como no UsuarioService)
         const page = queryDto.page || 1;
         const limit = queryDto.limit || 10;
         
@@ -57,7 +56,6 @@ export class ExercicioService {
     async findFavoritos(usuarioId: string, queryDto: FindAllExerciciosDto): Promise<any> {
         const { count, rows } = await this.exercicioRepository.findFavoritos(usuarioId, queryDto);
 
-        // Lógica de Paginação
         const page = queryDto.page || 1;
         const limit = queryDto.limit || 10;
         
@@ -66,13 +64,13 @@ export class ExercicioService {
             total: count,
             page: page,
             limit: limit,
-            totalPages: Math.ceil(count / count), // total / limit (corrigido no Repository)
+            totalPages: Math.ceil(count / count),
             hasNextPage: page * limit < count,
         };
     }
     
     async favoritar(usuarioId: string, exercicioId: string): Promise<{ success: boolean }> {
-        // 1. Verifica se o exercício existe
+        
         await this.exercicioRepository.findById(exercicioId); 
 
         // 2. Cria o registro M:N (favorito)
@@ -80,7 +78,7 @@ export class ExercicioService {
             await this.exercicioRepository.createFavorito(usuarioId, exercicioId);
             return { success: true };
         } catch (error: any) { 
-            // CRÍTICO: Verificar o nome do erro que o Sequelize retorna em runtime
+            // Verificar o nome do erro que o Sequelize retorna em runtime
             if (error.name === 'SequelizeUniqueConstraintError' || error.name === 'SequelizeForeignKeyConstraintError') {
                 throw new ConflictException('Este exercício já está nos seus favoritos.');
             }
@@ -104,7 +102,6 @@ export class ExercicioService {
     }
 
     async getSubgrupos(grupo?: GrupoMuscular): Promise<string[]> {
-        // Se houver lógica de filtro por grupo, ela viria aqui (mas por enquanto, retorna todos)
         return Object.values(SubgrupoMuscular);
     }
 }

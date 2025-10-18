@@ -1,13 +1,8 @@
-// src/profissional/dto/create-profissional.dto.ts
-
 import { IsNotEmpty, IsString, IsOptional, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { CreateUsuarioDto } from '../../usuario/dto/create-usuario.dto';
 
-/**
- * Este DTO inclui os dados básicos do Usuário (herdados/validados) e os dados específicos do Profissional.
- */
 export class CreateProfissionalDto {
 
   @ApiProperty({ type: CreateUsuarioDto, description: 'Dados de usuário (nome, email, senha) para a conta do profissional.' })

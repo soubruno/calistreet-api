@@ -1,11 +1,11 @@
-import { Injectable, BadRequestException, ForbiddenException, ConflictException } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ProgressoRepository } from './repository';
 import { CreateProgressoDto } from './dto/create-progresso.dto';
 import { FindAllProgressoDto } from './dto/find-all-progresso.dto';
 import { MedidaFisica, TipoMedida } from './medida-fisica.entity';
-import { TreinoService } from '../treino/service'; // Para buscar o Treino (se template)
-import { UsuarioService } from '../usuario/service'; // Para checagem de permissão
-import { ExercicioService } from '../exercicio/service'; // Para validação de exercícios
+import { TreinoService } from '../treino/service';
+import { UsuarioService } from '../usuario/service';
+import { ExercicioService } from '../exercicio/service';
 import { isUUID } from 'class-validator';
 import { Progresso } from './entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -90,7 +90,7 @@ export class ProgressoService {
      */
     async removeSessao(sessaoId: string, usuarioLogadoId: string): Promise<void> {
         
-        // 1. Verifica se a sessão existe e se o usuário tem permissão (dono ou Admin)
+        // Verifica se a sessão existe e se o usuário tem permissão (dono ou Admin)
         const sessao = await this.progressoRepository.findById(sessaoId);
         const usuarioLogado = await this.usuarioService.findOne(usuarioLogadoId);
 
@@ -98,7 +98,6 @@ export class ProgressoService {
             throw new ForbiddenException('Você não tem permissão para remover este histórico.');
         }
 
-        // 2. Delega a remoção ao Repository (que deve excluir também os ProgressoExercicio, idealmente via CASCADE)
         await this.progressoRepository.removeSessao(sessaoId);
     }
     
@@ -107,7 +106,7 @@ export class ProgressoService {
      */
     async updateSessao(sessaoId: string, updateData: any, usuarioLogadoId: string): Promise<Progresso> {
         
-        // 1. Permissão: Só o criador da sessão (ou ADMIN) pode atualizar
+        // Permissão: Só o criador da sessão (ou ADMIN) pode atualizar
         const sessao = await this.progressoRepository.findById(sessaoId);
         const usuarioLogado = await this.usuarioService.findOne(usuarioLogadoId);
 
@@ -115,11 +114,10 @@ export class ProgressoService {
             throw new ForbiddenException('Você não tem permissão para atualizar este histórico.');
         }
         
-        // 2. Atualiza apenas o registro da sessão (os resultados dos exercícios são mais complexos e devem ser atualizados separadamente)
         return this.progressoRepository.updateSessao(sessaoId, updateData);
     }
 
-    // --- 2. Histórico de Medidas Físicas (CRUD - 6 Endpoints Faltantes) ---
+    // --- 2. Histórico de Medidas Físicas ---
     
     /**
      * POST /progresso (Sub-rota para medidas) - Salvar progresso manual (medidas).
@@ -144,7 +142,6 @@ export class ProgressoService {
      * DELETE /progresso/medidas/:id - Remove uma medida física.
      */
     async removeMedida(medidaId: string, usuarioLogadoId: string): Promise<void> {
-        // A checagem de autoria é feita dentro do Repository.
         await this.progressoRepository.removeMedida(medidaId, usuarioLogadoId);
     }
     
@@ -154,12 +151,10 @@ export class ProgressoService {
      * GET /progresso/estatisticas - Estatísticas de performance (volume, tempo, etc.).
      */
     async getEstatisticas(usuarioId?: string): Promise<any> {
-        // Busca estatísticas de performance (Volume, Tempo Total, etc.)
-        const estatisticas = await this.progressoRepository.getPerformanceStats(usuarioId);        
-        // Busca as últimas 5 medidas para mostrar o progresso manual
+
+        const estatisticas = await this.progressoRepository.getPerformanceStats(usuarioId);
         const medidas = await this.progressoRepository.getLatestMedidas(usuarioId);
         
-        // Formatação simples para retorno
         return {
             ...estatisticas,
             medidasRecentes: medidas,
@@ -170,7 +165,7 @@ export class ProgressoService {
      * GET /progresso/comparar - Compara o progresso (ex: peso atual vs. 3 meses atrás).
      */
     async compararProgresso(usuarioId: string): Promise<any> {
-        // 1. Busca a medida mais recente de peso
+
         const medidas = await this.progressoRepository.findAllMedidas(usuarioId);
         const pesoAtual = medidas.find(m => m.tipo === TipoMedida.PESO);
 
@@ -178,7 +173,6 @@ export class ProgressoService {
             return { mensagem: 'Dados de peso insuficientes para comparação.' };
         }
         
-        // 2. Lógica de Comparação: Encontra o peso de 3 meses atrás (apenas exemplo)
         const tresMesesAtras = new Date();
         tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
 
@@ -188,7 +182,6 @@ export class ProgressoService {
 
         const diferencaPeso = pesoAtual.valor - (pesoAnterior?.valor || pesoAtual.valor);
 
-        // Retorno: Um exemplo de cálculo de diferença de performance
         return {
             pesoAtual: pesoAtual.valor,
             pesoAnterior: pesoAnterior?.valor,
@@ -202,12 +195,11 @@ export class ProgressoService {
      */
     async getConquistas(usuarioId: string): Promise<any> {
         
-        // Chamar o Repository de Conquistas para obter a lista real
         const conquistas = await this.conquistaRepository.findUnlockedByUser(usuarioId);
         
         return {
             usuarioId,
-            conquistasObtidas: conquistas, // <<< DADOS REAIS
+            conquistasObtidas: conquistas,
             mensagem: "Sucesso na leitura das conquistas."
         };
     }

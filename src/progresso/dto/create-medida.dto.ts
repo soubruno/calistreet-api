@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsEnum, IsString, IsOptional, Min } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber, IsEnum, IsString, Min } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TipoMedida } from '../medida-fisica.entity';
 

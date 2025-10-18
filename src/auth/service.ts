@@ -4,7 +4,8 @@ import * as bcrypt from 'bcryptjs';
 import { UsuarioService } from '../usuario/service';
 import { Usuario } from '../usuario/entity';
 import { LoginDto } from './dto/login.dto';
-import { JwtPayload } from './jwt.strategy'; // Importa a interface do payload
+import { JwtPayload } from './jwt.strategy';
+
 
 @Injectable()
 export class AuthService {
@@ -16,8 +17,6 @@ export class AuthService {
 
   /**
    * 1. Valida o usuário (apenas email e senha).
-   * @param email O email do usuário.
-   * @param senha A senha em texto puro.
    */
   async validateUser(email: string, senha: string): Promise<Usuario | null> {
     // O findByEmailForAuth do UsuarioService busca o usuário incluindo a SENHA
@@ -38,7 +37,6 @@ export class AuthService {
 
   /**
    * 2. Gera o token JWT após o usuário ser validado.
-   * @param usuario O objeto de usuário validado (sem a senha).
    */
   async login(loginDto: LoginDto): Promise<{ accessToken: string, user: Usuario }> {
     const { email, senha } = loginDto;
@@ -50,7 +48,7 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas. Verifique seu e-mail e senha.');
     }
     
-    // Payload do token (use apenas informações essenciais e públicas)
+    // Payload do token
     const payload: JwtPayload = { 
         id: usuarioValidado.id, 
         email: usuarioValidado.email, 

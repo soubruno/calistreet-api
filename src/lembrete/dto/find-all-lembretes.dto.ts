@@ -1,8 +1,7 @@
-import { IsOptional, IsEnum, IsBoolean, IsString } from 'class-validator';
+import { IsOptional, IsEnum, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto'; 
 import { DiaSemana } from '../entity';
-import { Type } from 'class-transformer';
 
 export class FindAllLembretesDto extends PaginationQueryDto {
     

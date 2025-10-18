@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Op } from 'sequelize';
 import { Lembrete } from './entity';
 import { CreateLembreteDto } from './dto/create-lembrete.dto';
 import { UpdateLembreteDto } from './dto/update-lembrete.dto';
@@ -8,7 +7,7 @@ import { FindAllLembretesDto } from './dto/find-all-lembretes.dto';
 
 // O tipo que o Repository espera (removendo 'ativo' string e adicionando 'ativo' boolean)
 type FindLembretesRepoDto = Omit<FindAllLembretesDto, 'ativo'> & {
-    ativo?: boolean; // <<< O tipo que realmente chega ao Repository
+    ativo?: boolean; // O tipo que realmente chega ao Repository
 };
 
 @Injectable()
@@ -45,7 +44,7 @@ export class LembreteRepository {
     }
   }
 
-  // --- Listagem e Filtros (Requisito 2) ---
+  // --- Listagem e Filtros ---
 
   async findAll(usuarioId: string, queryDto: FindLembretesRepoDto): Promise<any> {
     const limit = queryDto.limit || 10;

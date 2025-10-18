@@ -1,5 +1,3 @@
-// src/profissional/dto/update-profissional.dto.ts
-
 import { IsString, IsOptional, ValidateNested } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -8,10 +6,6 @@ import { UpdateUsuarioDto } from '../../usuario/dto/update-usuario.dto';
 // Reutiliza o DTO de atualização do Usuário para dados básicos.
 class UpdateUsuarioNestedDto extends PartialType(UpdateUsuarioDto) {}
 
-/**
- * DTO para atualização parcial de dados do Profissional.
- * Nota: O campo 'usuario' é opcional e aninhado, permitindo atualizar o nome/email/senha.
- */
 export class UpdateProfissionalDto {
 
   @IsOptional()

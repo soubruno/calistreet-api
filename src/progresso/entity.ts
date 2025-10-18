@@ -51,7 +51,7 @@ export class Progresso extends Model<Progresso> {
   declare dataFim: Date;
 
   @Column(DataType.INTEGER)
-  declare duracaoSegundos: number; // Duração total da sessão (tempo líquido)
+  declare duracaoSegundos: number;
 
   @Column({
     type: DataType.ENUM(...Object.values(StatusSessao)),
@@ -62,7 +62,7 @@ export class Progresso extends Model<Progresso> {
   @Column(DataType.TEXT)
   declare notas: string; 
 
-  // Coluna para armazenar o URL da imagem gerada para compartilhamento (Bônus - Fila)
+  // Coluna para armazenar o URL da imagem gerada para compartilhamento
   @Column(DataType.STRING)
   declare urlCompartilhamento: string;
   

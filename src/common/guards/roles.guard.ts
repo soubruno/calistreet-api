@@ -1,5 +1,3 @@
-// src/common/guards/roles.guard.ts
-
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { TipoUsuario } from '../enums/tipo-usuario.enum';
@@ -25,11 +23,10 @@ export class RolesGuard implements CanActivate {
     // 2. Obtém o usuário logado (adicionado ao request pelo JwtStrategy)
     const { user } = context.switchToHttp().getRequest();
     
-    // O objeto `user` deve ser a entidade Usuario
     const usuarioLogado: Usuario = user;
 
     if (!usuarioLogado) {
-        // Se não houver usuário no request (o JwtGuard deveria ter impedido isso), nega
+        // Se não houver usuário no request (o JwtGuard impede isso)
         return false;
     }
 

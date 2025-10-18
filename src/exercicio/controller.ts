@@ -59,9 +59,7 @@ export class ExercicioController {
   @Get()
   @UseGuards(AuthGuard('jwt')) // Apenas autenticado (não precisa de RolesGuard)
   @ApiOperation({ summary: 'Lista exercícios com filtros, paginação e status de favorito.' })
-  // O Swagger puxa os @ApiProperty do DTO
   async findAll(@Query() query: FindAllExerciciosDto, @Req() req: any) {
-    // Passa o ID do usuário logado para o Repository checar favoritos
     const usuarioId = req.user.id; 
     return this.exercicioService.findAll(query, usuarioId);
   }

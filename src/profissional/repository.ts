@@ -1,10 +1,8 @@
-// src/profissional/repository.ts
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Profissional } from './entity';
 import { Op } from 'sequelize';
-import { UpdateProfissionalDto } from './dto/update-profissional.dto'; // Será criado
+import { UpdateProfissionalDto } from './dto/update-profissional.dto';
 import { Usuario } from '../usuario/entity';
 import { FindAllProfissionaisDto } from './dto/find-all-profissionais.dto';
 
@@ -26,11 +24,10 @@ export class ProfissionalRepository {
   
   // Cria o registro específico do profissional
   async create(data: Profissional): Promise<Profissional> {
-    // Aqui usamos o objeto Profissional já criado com o usuarioId
     return this.profissionalModel.create(data as Profissional);
   }
 
-  // Listagem (reutilizando o DTO de paginação do usuário)
+  // Listagem
   async findAll(queryDto: FindAllProfissionaisDto): Promise<{ count: number, rows: Profissional[] }> { // <<< TIPO ALTERADO
     const limit = queryDto.limit || 10;
     const offset = ((queryDto.page || 1) - 1) * limit;
@@ -52,24 +49,22 @@ export class ProfissionalRepository {
         where: whereCondition,
             include: [{ 
             model: Usuario, 
-            // Selecionamos apenas nome e email do Usuário para o retorno
+            // Seleciona apenas nome e email do Usuário para o retorno
             attributes: ['nome', 'email'] 
         }], 
         limit,
         offset,
-        // Selecionamos os atributos específicos do Profissional
+        // Seleciona os atributos específicos do Profissional
         attributes: ['usuarioId', 'registroCREF', 'especialidade', 'cidade'] 
     });
 }
   async update(usuarioId: string, data: UpdateProfissionalDto): Promise<Profissional> {
-    const profissional = await this.profissionalModel.findByPk(usuarioId); // Busca o registro
+    const profissional = await this.profissionalModel.findByPk(usuarioId);
     
     if (!profissional) {
         throw new NotFoundException(`Profissional com ID ${usuarioId} não encontrado.`);
     }
 
-    // O Service garante que apenas dados do Profissional cheguem aqui.
-    // Usamos 'as unknown as object' para garantir que o DTO seja aceito pelo Sequelize.
     await profissional.update(data as unknown as object); 
     return profissional;
   }

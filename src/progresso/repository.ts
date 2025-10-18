@@ -7,7 +7,7 @@ import { CreateProgressoDto } from './dto/create-progresso.dto';
 import { FindAllProgressoDto } from './dto/find-all-progresso.dto';
 import { Treino } from '../treino/entity';
 import { Exercicio } from '../exercicio/entity';
-import { MedidaFisica } from './medida-fisica.entity'; // Para CRUD manual
+import { MedidaFisica } from './medida-fisica.entity';
 import { CreateMedidaDto } from './dto/create-medida.dto';
 
 @Injectable()
@@ -28,13 +28,11 @@ export class ProgressoRepository {
    */
   async create(data: CreateProgressoDto, usuarioId: string): Promise<Progresso> {
     
-    // 1. Cria o cabeçalho da sessão
     const novaSessao = await this.progressoModel.create({
       ...data,
       usuarioId,
     } as unknown as CreationAttributes<Progresso>);
 
-    // 2. Mapeia e insere os resultados dos exercícios (ProgressoExercicio)
     const resultados = data.resultadosExercicios.map(resultado => ({
       ...resultado,
       progressoId: novaSessao.id,
@@ -42,7 +40,6 @@ export class ProgressoRepository {
 
     await this.progressoExercicioModel.bulkCreate(resultados as ProgressoExercicio[]);
 
-    // 3. Retorna a sessão completa
     return this.findById(novaSessao.id);
   }
 
@@ -63,7 +60,7 @@ export class ProgressoRepository {
    * Atualiza o registro da sessão de progresso.
    */
   async updateSessao(sessaoId: string, data: any): Promise<Progresso> {
-    const progresso = await this.findById(sessaoId); // Verifica a existência
+    const progresso = await this.findById(sessaoId);
     await progresso.update(data as any);
     return progresso;
   }
@@ -72,11 +69,9 @@ export class ProgressoRepository {
    * Remove uma sessão de progresso (cabeçalho e detalhes).
    */
   async removeSessao(sessaoId: string): Promise<void> {
-    // 1. Remove os resultados dos exercícios (ProgressoExercicio)
-    // Nota: Idealmente, a FK com ON DELETE CASCADE faria isso, mas forçamos para garantir.
+
     await this.progressoExercicioModel.destroy({ where: { progressoId: sessaoId } });
     
-    // 2. Remove o cabeçalho da sessão
     const result = await this.progressoModel.destroy({ where: { id: sessaoId } });
     
     if (result === 0) {
@@ -90,7 +85,7 @@ export class ProgressoRepository {
     const limit = queryDto.limit || 10;
     const offset = ((queryDto.page || 1) - 1) * limit;
 
-    const whereCondition: any = { usuarioId }; // CRÍTICO: Filtra APENAS o progresso do usuário logado
+    const whereCondition: any = { usuarioId }; // Filtra APENAS o progresso do usuário logado
     
     if (queryDto.treinoId) {
         whereCondition.treinoId = queryDto.treinoId;
@@ -98,7 +93,6 @@ export class ProgressoRepository {
     if (queryDto.status) {
         whereCondition.status = queryDto.status;
     }
-    // Filtro por período
     if (queryDto.dataMinima || queryDto.dataMaxima) {
         whereCondition.dataInicio = { [Op.between]: [queryDto.dataMinima, queryDto.dataMaxima] };
     }
@@ -141,15 +135,12 @@ export class ProgressoRepository {
   async getPerformanceStats(usuarioId?: string): Promise<any> {
       const sequelize: Sequelize = this.progressoModel.sequelize as Sequelize; 
       
-      // 1. Lógica do WHERE (Geral sem ID)
       const whereClause = usuarioId 
           ? `WHERE p.usuario_id = :usuarioId AND p.status = 'CONCLUIDO'` 
           : `WHERE p.status = 'CONCLUIDO'`; 
       
-      // 2. Lógica do GROUP BY
       const groupByClause = usuarioId ? `GROUP BY p.usuario_id` : ''; 
 
-      // 3. Objeto de Substituição (apenas se o ID existir)
       const replacements = usuarioId ? { usuarioId } : {}; 
 
       const result = await sequelize.query(
@@ -170,10 +161,7 @@ export class ProgressoRepository {
           }
       );
 
-      // ... (Lógica de retorno para usuário específico ou soma geral - MANTIDA)
-
       if (!usuarioId) {
-          // Retorna a soma total dos resultados (já que o GROUP BY não foi aplicado)
           return {
               sessoesTotais: result.reduce((sum: number, row: any) => sum + parseInt(row.sessoesTotais), 0),
               tempoTotalSegundos: result.reduce((sum: number, row: any) => sum + parseInt(row.tempoTotalSegundos), 0),
@@ -181,7 +169,6 @@ export class ProgressoRepository {
           };
       }
 
-      // Retorna a estatística do usuário específico
       return result[0] || {};
   }
   
@@ -190,7 +177,6 @@ export class ProgressoRepository {
       if (usuarioId) {
           whereCondition.usuarioId = usuarioId;
       } else {
-          // Se a consulta é geral, não retornamos medidas individuais aleatórias
           return []; 
       }
 

@@ -4,21 +4,20 @@ import { CreateConquistaDto } from './dto/create-conquista.dto';
 import { UpdateConquistaDto } from './dto/update-conquista.dto';
 import { FindAllConquistasDto } from './dto/find-all-conquistas.dto';
 import { Conquista } from './entity';
-import { UsuarioService } from '../usuario/service'; // Para checar ADMIN
+import { UsuarioService } from '../usuario/service';
 import { OnEvent } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ConquistaService {
     constructor(
         private readonly conquistaRepository: ConquistaRepository,
-        private readonly usuarioService: UsuarioService, // Para checagem de permissão
+        private readonly usuarioService: UsuarioService,
     ) {}
 
     // --- 1. CRUD do Catálogo (Restrito a ADMIN) ---
 
     async create(createConquistaDto: CreateConquistaDto, usuarioLogadoId: string): Promise<Conquista> {
         
-        // Regra de Negócio: APENAS ADMIN pode criar conquistas
         const usuario = await this.usuarioService.findOne(usuarioLogadoId);
         if (usuario.tipo !== 'ADMIN') {
             throw new ForbiddenException('Apenas administradores podem gerenciar o catálogo de conquistas.');
@@ -35,24 +34,23 @@ export class ConquistaService {
     }
 
     async update(id: string, updateConquistaDto: UpdateConquistaDto, usuarioLogadoId: string): Promise<Conquista> {
-        // 1. Checagem de Permissão (APENAS ADMIN)
+        
         const usuario = await this.usuarioService.findOne(usuarioLogadoId);
         if (usuario.tipo !== 'ADMIN') {
             throw new ForbiddenException('Apenas administradores podem atualizar o catálogo de conquistas.');
         }
         
-        // 2. Delega a atualização
         return this.conquistaRepository.update(id, updateConquistaDto);
     }
 
     async remove(id: string, usuarioLogadoId: string): Promise<void> {
-        // 1. Checagem de Permissão (APENAS ADMIN)
+        
         const usuario = await this.usuarioService.findOne(usuarioLogadoId);
         if (usuario.tipo !== 'ADMIN') {
             throw new ForbiddenException('Apenas administradores podem remover conquistas.');
         }
         
-        // 2. Delega a exclusão
+        
         await this.conquistaRepository.remove(id);
     }
     
@@ -70,7 +68,7 @@ export class ConquistaService {
      * Lógica Bônus (Evento Futuro): Desbloqueia uma conquista para o usuário.
      */
     async unlock(usuarioId: string, conquistaId: string): Promise<any> {
-        // Esta função seria chamada por um 'Listener' após um evento (ex: TreinoConcluidoEvent)
+
         await this.conquistaRepository.findById(conquistaId); // Garante que a conquista existe
         
         try {
@@ -94,7 +92,7 @@ export class ConquistaService {
 
         // 1. Encontre a regra "Primeira Milha" (Regra: Tipo TREINO_COMPLETO, Parâmetro: "1")
         const regraPrimeiroTreino = await this.conquistaRepository.findRegraByTipoAndParam(
-            'TREINO_COMPLETO' as any, // Adicionar 'as any' ou garantir a tipagem do Enum
+            'TREINO_COMPLETO' as any,
             '1' 
         );
 

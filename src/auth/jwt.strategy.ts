@@ -2,11 +2,9 @@ import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/c
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
-// -------------------------------------------------------------------------
-// IMPORTAÇÕES FALTANTES/CRÍTICAS
-import { UsuarioService } from '../usuario/service'; // <-- CRÍTICO: Serviço para buscar o usuário
+import { UsuarioService } from '../usuario/service';
 import { Usuario } from '../usuario/entity';
-// -------------------------------------------------------------------------
+
 
 // Interface que define a estrutura do payload que estará dentro do token JWT
 export interface JwtPayload {
@@ -16,15 +14,12 @@ export interface JwtPayload {
 }
 
 @Injectable()
-// Adicionamos 'jwt' explicitamente (opcional, mas recomendado para clareza)
+// "jwt" foi adicionado mesmo sendo opcional, para ter mais clareza
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') { 
   constructor(
     private readonly configService: ConfigService,
-    // -------------------------------------------------------------------------
-    // CRÍTICO: INJETAR O SERVICE para que o NestJS reconheça o Strategy
     @Inject(forwardRef(() => UsuarioService))
     private readonly usuarioService: UsuarioService, 
-    // -------------------------------------------------------------------------
   ) {
     // 1. Configura a estratégia 'jwt'
     super({

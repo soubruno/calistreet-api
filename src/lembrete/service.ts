@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LembreteRepository } from './repository';
 import { CreateLembreteDto } from './dto/create-lembrete.dto';
 import { UpdateLembreteDto } from './dto/update-lembrete.dto';
@@ -12,7 +12,7 @@ export class LembreteService {
         // Futura injeção do QueueService (Bônus Filas)
     ) {}
 
-    // --- CRUD e Lógica de Filas (Pontos para Bônus) ---
+    // --- CRUD e Lógica de Filas (Bônus) ---
 
     async create(createLembreteDto: CreateLembreteDto, usuarioId: string): Promise<Lembrete> {
         // LÓGICA BÔNUS (FUTURA): Enfileirar o agendamento
@@ -25,7 +25,7 @@ export class LembreteService {
     }
 
     async findAll(usuarioId: string, queryDto: FindAllLembretesDto): Promise<any> {
-        // CRÍTICO: Conversão explícita de string para booleano
+        // Conversão explícita de string para booleano
         const ativoFinal: boolean | undefined = 
             queryDto.ativo === 'true' ? true : 
             queryDto.ativo === 'false' ? false : 
@@ -37,7 +37,7 @@ export class LembreteService {
             ...restOfQuery, 
             ativo: ativoFinal 
         });
-        // Lógica de Paginação
+        
         const page = queryDto.page || 1;
         const limit = queryDto.limit || 10;
         

@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './src/auth/module';
-import { JwtModule } from '@nestjs/jwt';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
@@ -40,8 +39,6 @@ import { RelatoriosModule } from './src/relatorios/module';
 
 import { UsuarioModule } from './src/usuario/module';
 import { ProfissionalModule } from './src/profissional/module';
-// Importaremos os demais módulos (Auth, Treino, Progresso, etc.)
-// à medida que os criarmos. Por enquanto, a base:
 import { ExercicioModule } from './src/exercicio/module';
 import { TreinoModule } from './src/treino/module';
 import { ProgressoModule } from './src/progresso/module';
@@ -50,7 +47,7 @@ import { ConquistaModule } from './src/conquista/module';
 
 @Module({
   imports: [
-    // Módulo para carregar o arquivo .env
+
     ConfigModule.forRoot({
       isGlobal: true, // Torna o ConfigService disponível em toda a aplicação
     }),
@@ -68,9 +65,9 @@ import { ConquistaModule } from './src/conquista/module';
         database: configService.get('PGDATABASE'),
         
         // Configurações do Sequelize
-        autoLoadModels: true, // Carrega modelos automaticamente
-        synchronize: true, // Sincroniza o DB com os Models (usar `false` em produção)
-        alter: true, // Permite alterar a tabela (usar `false` em produção)
+        autoLoadModels: true,
+        synchronize: true,
+        alter: true,
         define: {
           underscored: true, // Usa snake_case no banco de dados (ex: created_at)
         },
@@ -106,12 +103,10 @@ import { ConquistaModule } from './src/conquista/module';
       }),
     }),
     
-    // Módulos de Funcionalidade
     EventEmitterModule.forRoot(),
     UsuarioModule,
     ProfissionalModule,
     RelatoriosModule,
-    // Próximos módulos a serem adicionados:
     AuthModule,
     ExercicioModule,
     TreinoModule,

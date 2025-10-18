@@ -41,7 +41,7 @@ export class ProgressoExercicio extends Model<ProgressoExercicio> {
   @Column(DataType.INTEGER)
   declare seriesFeitas: number;
   
-  // Repetições feitas: armazenamos como string/JSON para permitir '8, 8, 7' (falha na última)
+  // Repetições feitas: armazena como string/JSON para permitir '8, 8, 7' (falha na última)
   @Column(DataType.STRING)
   declare repeticoesFeitas: string; 
   
@@ -49,5 +49,5 @@ export class ProgressoExercicio extends Model<ProgressoExercicio> {
   declare cargaUtilizadaKg: number; 
 
   @Column(DataType.INTEGER)
-  declare tempoTotalSegundos: number; // Tempo total gasto no exercício (para isométricos/descanso)
+  declare tempoTotalSegundos: number;
 }

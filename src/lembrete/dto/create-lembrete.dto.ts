@@ -14,7 +14,7 @@ export class CreateLembreteDto {
   declare diaSemana: DiaSemana;
 
   @IsString({ message: 'O horário é obrigatório.' })
-  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: 'O formato da hora deve ser HH:MM.' }) // Ex: 19:30
+  @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: 'O formato da hora deve ser HH:MM.' })
   @ApiProperty({ description: 'Horário do dia para envio (formato HH:MM).', example: '19:30' })
   declare hora: string; 
 

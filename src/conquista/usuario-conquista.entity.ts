@@ -4,7 +4,7 @@ import { Conquista } from './entity';
 
 @Table({
   tableName: 'usuarios_conquistas',
-  timestamps: true, // Data em que foi obtida (createdAt)
+  timestamps: true,
 })
 export class UsuarioConquista extends Model<UsuarioConquista> {
   @ForeignKey(() => Usuario)

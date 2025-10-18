@@ -1,21 +1,22 @@
 import { Controller, Post, Get, Put, Patch, Delete, Body, HttpCode, HttpStatus, Param, UseGuards, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport'; // Usado para proteger a rota
+import { AuthGuard } from '@nestjs/passport';
 import { UsuarioService } from './service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { Usuario, Nivel } from './entity';
+import { Usuario } from './entity';
 import { Roles } from '../common/decorators/roles.decorator';
 import { TipoUsuario } from '../common/enums/tipo-usuario.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { FindAllUsuariosDto } from './dto/find-all-usuarios.dto'; 
 
-@ApiTags('Usuários') // Etiqueta no Swagger
+@ApiTags('Usuários')
 @ApiBearerAuth()
 @Controller('usuarios')
-//@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class UsuarioController {
-  constructor(private readonly usuarioService: UsuarioService) {}
+  constructor(
+    private readonly usuarioService: UsuarioService,
+  ) {}
 
   // 1. POST /usuarios 
   // Endpoint: POST /usuarios (Registro/Criação de Conta)
@@ -36,17 +37,10 @@ export class UsuarioController {
   // 2. GET /usuarios?nome&genero&page
   @Get()
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(TipoUsuario.ADMIN, TipoUsuario.PROFISSIONAL) // Protege para que apenas admins e profissionais listem todos
+  @Roles(TipoUsuario.ADMIN, TipoUsuario.PROFISSIONAL)
   @ApiOperation({ summary: 'Lista usuários com filtros e paginação.' })
-  
-  @ApiQuery({ name: 'nome', required: false })
-  @ApiQuery({ name: 'genero', required: false })
-  @ApiQuery({ name: 'page', required: false })
-  @ApiQuery({ name: 'limit', required: false})
-  
   @ApiResponse({ status: 200, description: 'Lista de usuários paginada.' })
   async findAll(@Query() query: FindAllUsuariosDto): Promise<any> {
-      // Implementação da busca com filtros e paginação... (A ser desenvolvida no service)
       return this.usuarioService.findAll(query);
   }
 
@@ -57,8 +51,7 @@ export class UsuarioController {
   @ApiResponse({ status: 200, type: Usuario })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
   async findOne(@Param('id') id: string): Promise<Usuario> {
-    // Implementação de busca por ID (A ser desenvolvida no service)
-    return { id, message: "Detalhes do Usuário/Perfil" } as unknown as Usuario;
+    return this.usuarioService.findOne(id);
   }
   
   // 4. PUT /usuarios/:id (Editar informações)
@@ -68,19 +61,16 @@ export class UsuarioController {
   @ApiResponse({ status: 200, description: 'Usuário atualizado.' })
   @ApiResponse({ status: 403, description: 'Acesso negado.' })
   async update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto): Promise<Usuario> {
-    // Implementação de atualização completa (A ser desenvolvida no service)
-    return { id, ...updateUsuarioDto, message: "Atualização Completa" } as unknown as Usuario;
+    return this.usuarioService.update(id, updateUsuarioDto);
   }
   
   // 5. PATCH /usuarios/:id/foto (Atualizar foto)
-  // Seria melhor usar um DTO específico ou um interceptor de upload de arquivo aqui, mas mantemos o path para o escopo.
   @Patch(':id/foto')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiOperation({ summary: 'Atualiza a foto de perfil do usuário.' })
   @ApiResponse({ status: 200, description: 'Foto atualizada.' })
-  async updateFoto(@Param('id') id: string): Promise<any> {
-    // Implementação de atualização parcial (A ser desenvolvida no service)
-    return { id, message: "Foto atualizada" };
+  async updateFoto(@Param('id') id: string, @Body('fotoUrl') fotoUrl: string): Promise<any> {
+    return this.usuarioService.updateFoto(id, fotoUrl);
   }
   
   // 6. PATCH /usuarios/:id/capa (Atualizar capa)
@@ -88,29 +78,26 @@ export class UsuarioController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiOperation({ summary: 'Atualiza a imagem de capa do perfil.' })
   @ApiResponse({ status: 200, description: 'Capa atualizada.' })
-  async updateCapa(@Param('id') id: string): Promise<any> {
-    // Implementação de atualização parcial (A ser desenvolvida no service)
-    return { id, message: "Capa atualizada" };
+async updateCapa(@Param('id') id: string, @Body('capaUrl') capaUrl: string): Promise<any> {
+  return this.usuarioService.updateCapa(id, capaUrl);
   }
 
-  // 7. DELETE /usuarios/:id (Excluir usuário - Requisito 5: Permissões)
+  // 7. DELETE /usuarios/:id (Excluir usuário)
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(TipoUsuario.ADMIN) // << Apenas ADMS podem deletar (Requisito 5)
+  @Roles(TipoUsuario.ADMIN)
   @ApiOperation({ summary: 'Exclui um usuário (Apenas Administradores).' })
   @ApiResponse({ status: 204, description: 'Usuário excluído com sucesso.' })
   @ApiResponse({ status: 403, description: 'Apenas Administradores podem excluir usuários.' })
   async remove(@Param('id') id: string): Promise<void> {
-    // Implementação de exclusão (A ser desenvolvida no service)
-    return; // Retorna status 204 (No Content)
+    return this.usuarioService.remove(id);
   }
   
-  // 8. GET /usuarios/:id/conquistas (Listar conquistas)
+// 8. GET /usuarios/:id/conquistas (Listar conquistas)
   @Get(':id/conquistas')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiOperation({ summary: 'Lista as conquistas obtidas pelo usuário.' })
   async getConquistas(@Param('id') id: string): Promise<any> {
-    // Implementação de busca de conquistas (A ser desenvolvida no service)
     return { id, message: "Lista de Conquistas" };
   }
 }

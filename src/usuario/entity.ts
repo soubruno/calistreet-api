@@ -1,15 +1,13 @@
 import { Table, Column, Model, DataType, HasOne, HasMany } from 'sequelize-typescript';
-//import { Profissional } from '../profissional/entity';
+import { Profissional } from '../profissional/entity';
 // Importação circular para Progresso, Metas, Lembretes, etc. será adicionada depois.
 
-// Enum simples para o tipo de usuário (para o controle de permissão)
 export enum TipoUsuario {
   ALUNO = 'ALUNO',
   PROFISSIONAL = 'PROFISSIONAL',
   ADMIN = 'ADMIN',
 }
 
-// Enum para o Nivelamento (do escopo)
 export enum Nivel {
   INICIANTE = 'INICIANTE',
   INTERMEDIARIO = 'INTERMEDIARIO',
@@ -27,7 +25,7 @@ export enum Objetivo {
   HIPERTROFIA = 'HIPERTROFIA',
   MOBILIDADE = 'MOBILIDADE',
   PERDER_GORDURA = 'PERDER_GORDURA',
-  FRONT_LEVER = 'FRONT_LEVER', // Exemplo de treino específico
+  FRONT_LEVER = 'FRONT_LEVER',
   PLANCHE = 'PLANCHE',
 }
 
@@ -57,14 +55,12 @@ export class Usuario extends Model<Usuario> {
   })
   declare email: string;
 
-  // Campo essencial para autenticação (será hash/salt)
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   declare senha: string;
 
-  // Tipo de Usuário para controle de Permissões (Requisito 5)
   @Column({
     type: DataType.ENUM(...Object.values(TipoUsuario)),
     allowNull: false,
@@ -75,10 +71,10 @@ export class Usuario extends Model<Usuario> {
   // --- Dados do Perfil (do seu escopo) ---
   
   @Column(DataType.FLOAT)
-  declare peso: number; // Peso em kg
+  declare peso: number;
   
   @Column(DataType.FLOAT)
-  declare altura: number; // Altura em metros
+  declare altura: number;
 
   @Column(DataType.DATEONLY)
   declare dataNasc: Date;
@@ -101,9 +97,15 @@ export class Usuario extends Model<Usuario> {
     })
   declare objetivo: Objetivo; 
   
+  @Column(DataType.STRING)
+  declare fotoUrl: string;
+  
+  @Column(DataType.STRING)
+  declare capaUrl: string;
+
   // Campo para armazenar equipamentos (JSONB ou STRING, vamos usar STRING por simplicidade inicial)
-  //@Column(DataType.STRING)
-  //declare equipamentos: string; // Ex: 'argolas,paralela'
+  @Column(DataType.STRING)
+  declare equipamentos: string; // Ex: 'argolas,paralela'
 
   // O Profissional associado a este Aluno (se houver)
   //@Column(DataType.UUID)
@@ -111,5 +113,5 @@ export class Usuario extends Model<Usuario> {
 
   // --- Relacionamento: Se for um Profissional, terá uma entrada nesta tabela ---
   //@HasOne(() => Profissional)
-  //dadosProfissional: Profissional;
+  //declare dadosProfissional: Profissional;
 }

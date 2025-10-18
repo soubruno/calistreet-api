@@ -12,13 +12,13 @@ import { MedidaFisica } from './medida-fisica.entity'; // Usado para tipagem de 
 @ApiTags('Progresso & Histórico') 
 @ApiBearerAuth()
 @Controller('progresso')
-@UseGuards(AuthGuard('jwt')) // Todas as rotas de progresso são protegidas por autenticação
+@UseGuards(AuthGuard('jwt'))
 export class ProgressoController {
   constructor(private readonly progressoService: ProgressoService) {}
   
   // --- ENDPOINTS DE Progresso MANUAL (MEDIDAS FÍSICAS) ---
 
-  // 6. POST /progresso/medidas (Salvar progresso manual)
+  // 1. POST /progresso/medidas (Salvar progresso manual)
   @Post('medidas')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Registra uma medida física (peso, circunferência) manualmente.' })
@@ -27,7 +27,7 @@ export class ProgressoController {
     return this.progressoService.createMedida(dto, usuarioId);
   }
 
-  // 7. GET /progresso/medidas (Listar todas as medidas do usuário)
+  // 2. GET /progresso/medidas (Listar todas as medidas do usuário)
   @Get('medidas')
   @ApiOperation({ summary: 'Lista o histórico de medidas físicas do usuário logado.' })
   async findAllMedidas(@Req() req: any): Promise<MedidaFisica[]> {
@@ -35,7 +35,7 @@ export class ProgressoController {
     return this.progressoService.findAllMedidas(usuarioId);
   }
   
-  // 8. DELETE /progresso/medidas/:id (Remover uma medida física)
+  // 3. DELETE /progresso/medidas/:id (Remover uma medida física)
   @Delete('medidas/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove um registro de medida física (Apenas o dono).' })
@@ -45,9 +45,9 @@ export class ProgressoController {
   }
 
   
-  // --- C. ENDPOINTS DE ESTATÍSTICAS E FLUXO ---
+  // --- ENDPOINTS DE ESTATÍSTICAS E FLUXO ---
   
-  // 9. GET /progresso/estatisticas (Estatísticas e Gráficos)
+  // 4. GET /progresso/estatisticas (Estatísticas e Gráficos)
   @Get('estatisticas')
   @ApiOperation({ summary: 'Retorna estatísticas de performance (volume, tempo, últimas medidas).' })
   async getEstatisticas(@Req() req: any) {
@@ -55,7 +55,7 @@ export class ProgressoController {
     return this.progressoService.getEstatisticas(usuarioId);
   }
 
-  // 10. GET /progresso/comparar (Comparar progresso)
+  // 5. GET /progresso/comparar (Comparar progresso)
   @Get('comparar')
   @ApiOperation({ summary: 'Compara dados de progresso (ex: peso atual vs. 3 meses atrás).' })
   async compararProgresso(@Req() req: any) {
@@ -63,15 +63,15 @@ export class ProgressoController {
     return this.progressoService.compararProgresso(usuarioId);
   }
 
-  // 11. POST /progresso/:id/compartilhar (Gerar link de compartilhamento - FILAS BÔNUS)
+  // 6. POST /progresso/:id/compartilhar (Gerar link de compartilhamento)
   @Post(':id/compartilhar')
-  @ApiOperation({ summary: 'Gera uma imagem de conquista para compartilhamento (FILAS - Bônus).' })
+  @ApiOperation({ summary: 'Gera uma imagem de conquista para compartilhamento.' })
   async gerarCompartilhamento(@Param('id') sessaoId: string, @Req() req: any) {
     // A lógica de filas será inserida no service.
     return { message: `Processamento de imagem para sessão ${sessaoId} iniciado.` };
   }
   
-  // 12. GET /progresso/conquistas (Listar as conquistas obtidas)
+  // 7. GET /progresso/conquistas (Listar as conquistas obtidas)
   @Get('conquistas')
   @ApiOperation({ summary: 'Lista todas as conquistas obtidas pelo usuário logado.' })
   async getConquistas(@Req() req: any) {
@@ -82,7 +82,7 @@ export class ProgressoController {
   
   // --- GESTÃO DO HISTÓRICO DE SESSÕES (Progresso) ---
 
-  // 1. POST /progresso (Registro de sessão concluída - Criação Transacional)
+  // 8. POST /progresso (Registro de sessão concluída - Criação Transacional)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Registra uma sessão de treino concluída (Histórico).' })
@@ -91,7 +91,7 @@ export class ProgressoController {
     return this.progressoService.createSessao(dto, usuarioId);
   }
 
-  // 2. GET /progresso (Listar histórico de sessões - Filtros e Paginação)
+  // 9. GET /progresso (Listar histórico de sessões - Filtros e Paginação)
   @Get()
   @ApiOperation({ summary: 'Lista o histórico de sessões do usuário logado.' })
   async findAllSessoes(@Query() query: FindAllProgressoDto, @Req() req: any): Promise<any> {
@@ -99,7 +99,7 @@ export class ProgressoController {
     return this.progressoService.findAllSessoes(usuarioId, query);
   }
 
-  // 3. GET /progresso/:id (Detalhes de uma sessão de progresso)
+  // 10. GET /progresso/:id (Detalhes de uma sessão de progresso)
   @Get(':id')
   @ApiOperation({ summary: 'Visualiza os detalhes de uma sessão de treino (inclui resultados de exercícios).' })
   async findOneSessao(@Param('id') sessaoId: string, @Req() req: any) {
@@ -107,7 +107,7 @@ export class ProgressoController {
     return this.progressoService.findOneSessao(sessaoId, usuarioId);
   }
   
-  // 4. PUT /progresso/:id (Atualizar o cabeçalho da sessão)
+  // 11. PUT /progresso/:id (Atualizar o cabeçalho da sessão)
   @Put(':id')
   @ApiOperation({ summary: 'Atualiza o registro de sessão de treino (apenas o cabeçalho, ex: status, notas).' })
   async updateSessao(@Param('id') sessaoId: string, @Body() dto: UpdateProgressoDto, @Req() req: any): Promise<any> {
@@ -116,7 +116,7 @@ export class ProgressoController {
       return this.progressoService.updateSessao(sessaoId, dto, usuarioId);
   }
   
-  // 5. DELETE /progresso/:id (Remover uma sessão de progresso)
+  // 12. DELETE /progresso/:id (Remover uma sessão de progresso)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove uma sessão de histórico/progresso (Apenas o dono).' })

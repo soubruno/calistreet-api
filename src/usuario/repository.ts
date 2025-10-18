@@ -15,7 +15,6 @@ export class UsuarioRepository {
 
   /**
    * Encontra um usuário pelo email, incluindo a senha para a validação de login.
-   * @param email O email do usuário.
    */
   async findByEmail(email: string): Promise<Usuario | null> {
     return this.usuarioModel.findOne({ 
@@ -26,17 +25,13 @@ export class UsuarioRepository {
 
   /**
    * Cria e salva um novo usuário no banco de dados.
-   * @param data Dados validados do usuário.
    */
   async create(data: CreateUsuarioDto): Promise<Usuario> {
     return this.usuarioModel.create(data as unknown as CreationAttributes<Usuario>);
-    // return this.usuarioModel.create(data as unknown as CreationAttributes<Usuario>);
-
   }
 
   /**
    * Busca um usuário pelo ID.
-   * @param id ID do usuário (UUID).
    */
   async findById(id: string): Promise<Usuario> {
     const usuario = await this.usuarioModel.findByPk(id, {
@@ -50,7 +45,6 @@ export class UsuarioRepository {
   
   /**
    * Lista usuários com filtros e paginação.
-   * @param queryDto Filtros e parâmetros de paginação.
    */
   async findAll(queryDto: FindAllUsuariosDto): Promise<{ count: number, rows: Usuario[] }> {
     const limit = queryDto.limit || 10;
@@ -81,11 +75,9 @@ export class UsuarioRepository {
 
   /**
    * Atualiza um usuário.
-   * @param id ID do usuário.
-   * @param data Dados para atualização.
    */
   async update(id: string, data: UpdateUsuarioDto): Promise<Usuario> {
-    const usuario = await this.findById(id); // Reusa o findById para verificar a existência
+    const usuario = await this.findById(id);
     
     await usuario.update(data as unknown as CreationAttributes<Usuario>);
     return usuario;
@@ -93,7 +85,6 @@ export class UsuarioRepository {
 
   /**
    * Exclui um usuário.
-   * @param id ID do usuário.
    */
   async remove(id: string): Promise<void> {
     const result = await this.usuarioModel.destroy({ where: { id } });
