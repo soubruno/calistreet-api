@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreationAttributes, Op } from 'sequelize';
-import { Usuario } from './entity';
+import { TipoUsuario, Usuario } from './entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { FindAllUsuariosDto } from './dto/find-all-usuarios.dto'; 
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -100,5 +100,12 @@ export class UsuarioRepository {
     if (result === 0) {
         throw new NotFoundException(`Usuário com ID ${id} não encontrado para exclusão.`);
     }
+  }
+
+  /**
+   * Conta o total de usuários e profissionais.
+   */
+  async countByTipo(tipo: TipoUsuario): Promise<number> {
+    return this.usuarioModel.count({ where: { tipo } });
   }
 }

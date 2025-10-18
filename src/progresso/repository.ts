@@ -138,9 +138,20 @@ export class ProgressoRepository {
 
   // --- 4. Queries de Estatísticas e Comparação (Para Módulo Relatórios/Service) ---
   
-  async getPerformanceStats(usuarioId: string): Promise<any> {
-      // Implementação de agregação (volume total de séries/reps, tempo total)
-      const sequelize = this.progressoModel.sequelize as Sequelize;
+  async getPerformanceStats(usuarioId?: string): Promise<any> {
+      const sequelize: Sequelize = this.progressoModel.sequelize as Sequelize; 
+      
+      // 1. Lógica do WHERE (Geral sem ID)
+      const whereClause = usuarioId 
+          ? `WHERE p.usuario_id = :usuarioId AND p.status = 'CONCLUIDO'` 
+          : `WHERE p.status = 'CONCLUIDO'`; 
+      
+      // 2. Lógica do GROUP BY
+      const groupByClause = usuarioId ? `GROUP BY p.usuario_id` : ''; 
+
+      // 3. Objeto de Substituição (apenas se o ID existir)
+      const replacements = usuarioId ? { usuarioId } : {}; 
+
       const result = await sequelize.query(
           `
           SELECT 
@@ -149,21 +160,42 @@ export class ProgressoRepository {
               COALESCE(SUM(pe.series_feitas), 0) AS "totalSeriesFeitas"
           FROM progresso p
           LEFT JOIN progresso_exercicios pe ON p.id = pe.progresso_id
-          WHERE p.usuario_id = :usuarioId AND p.status = 'CONCLUIDO'
-          GROUP BY p.usuario_id
+          ${whereClause} 
+          ${groupByClause} 
           `,
           {
-              replacements: { usuarioId },
+              replacements, 
               type: 'SELECT',
               raw: true,
           }
       );
+
+      // ... (Lógica de retorno para usuário específico ou soma geral - MANTIDA)
+
+      if (!usuarioId) {
+          // Retorna a soma total dos resultados (já que o GROUP BY não foi aplicado)
+          return {
+              sessoesTotais: result.reduce((sum: number, row: any) => sum + parseInt(row.sessoesTotais), 0),
+              tempoTotalSegundos: result.reduce((sum: number, row: any) => sum + parseInt(row.tempoTotalSegundos), 0),
+              totalSeriesFeitas: result.reduce((sum: number, row: any) => sum + parseInt(row.totalSeriesFeitas), 0),
+          };
+      }
+
+      // Retorna a estatística do usuário específico
       return result[0] || {};
   }
   
-  async getLatestMedidas(usuarioId: string): Promise<MedidaFisica[]> {
+  async getLatestMedidas(usuarioId?: string): Promise<MedidaFisica[]> {
+      const whereCondition: any = {};
+      if (usuarioId) {
+          whereCondition.usuarioId = usuarioId;
+      } else {
+          // Se a consulta é geral, não retornamos medidas individuais aleatórias
+          return []; 
+      }
+
       return this.medidaFisicaModel.findAll({
-          where: { usuarioId },
+          where: whereCondition, 
           order: [['dataRegistro', 'DESC']],
           limit: 5,
       });

@@ -153,10 +153,9 @@ export class ProgressoService {
     /**
      * GET /progresso/estatisticas - Estatísticas de performance (volume, tempo, etc.).
      */
-    async getEstatisticas(usuarioId: string): Promise<any> {
+    async getEstatisticas(usuarioId?: string): Promise<any> {
         // Busca estatísticas de performance (Volume, Tempo Total, etc.)
-        const estatisticas = await this.progressoRepository.getPerformanceStats(usuarioId);
-        
+        const estatisticas = await this.progressoRepository.getPerformanceStats(usuarioId);        
         // Busca as últimas 5 medidas para mostrar o progresso manual
         const medidas = await this.progressoRepository.getLatestMedidas(usuarioId);
         

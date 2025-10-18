@@ -3,6 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AuthModule } from './src/auth/module';
 import { JwtModule } from '@nestjs/jwt';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-redis-store';
+
 // -------------------------------------------------------------------------
 // 1. IMPORTAÇÃO DE TODAS AS ENTIDADES (MODELS) PARA O SEQUELIZE
 // -------------------------------------------------------------------------
@@ -27,6 +31,8 @@ import { Lembrete } from './src/lembrete/entity';
 import { Conquista } from './src/conquista/entity';
 import { UsuarioConquista } from './src/conquista/usuario-conquista.entity';
 
+// Relatórios
+import { RelatoriosModule } from './src/relatorios/module';
 
 // -------------------------------------------------------------------------
 // 2. IMPORTAÇÃO DOS MÓDULOS DE FUNCIONALIDADE
@@ -41,7 +47,6 @@ import { TreinoModule } from './src/treino/module';
 import { ProgressoModule } from './src/progresso/module';
 import { LembreteModule } from './src/lembrete/module';
 import { ConquistaModule } from './src/conquista/module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -87,11 +92,25 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         ],
       }),
     }),
+
+    // Configuração do Cache com Redis
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get('REDIS_HOST') || 'localhost',
+        port: configService.get('REDIS_PORT') || 6379,
+        ttl: 60000, // 60 segundos de tempo de vida do cache por padrão
+      }),
+    }),
     
     // Módulos de Funcionalidade
     EventEmitterModule.forRoot(),
     UsuarioModule,
     ProfissionalModule,
+    RelatoriosModule,
     // Próximos módulos a serem adicionados:
     AuthModule,
     ExercicioModule,
