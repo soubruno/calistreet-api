@@ -5,6 +5,7 @@ import { TreinoExercicio } from './treino-exercicio.entity';
 import { CreateTreinoDto, TreinoItemDto } from './dto/create-treino.dto';
 import { Exercicio } from '../exercicio/entity';
 import { Usuario } from '../usuario/entity';
+import { FindAllTreinosDto } from './dto/find-all-treinos.dto';
 
 @Injectable()
 export class TreinoRepository {
@@ -109,7 +110,7 @@ export class TreinoRepository {
   /**
    * 5. Lista Treinos com filtros e paginação (GET /treinos).
    */
-  async findAll(query: any): Promise<{ count: number, rows: Treino[] }> {
+  async findAll(query: FindAllTreinosDto): Promise<{ count: number, rows: Treino[] }> {
     const limit = query.limit || 10;
     const offset = ((query.page || 1) - 1) * limit;
 
@@ -123,9 +124,19 @@ export class TreinoRepository {
     // Filtro por Criador/Usuário (para treinos personalizados)
     if (query.usuarioId) {
         whereCondition.criadoPorId = query.usuarioId;
-    } else {
-        // Se nenhum usuarioId for especificado, lista apenas templates públicos (lógica de negócio)
-        whereCondition.isTemplate = true; 
+    }
+    
+    // Filtro Explícito por isTemplate (prioriza a escolha do usuário)
+    if (query.isTemplate !== undefined) {
+        whereCondition.isTemplate = query.isTemplate === 'true';
+    }
+    
+    // Se nenhum filtro explícito for dado, definimos o padrão como isTemplate = true.
+    const hasExplicitFilter = !!query.usuarioId || query.isTemplate !== undefined || query.nivel !== undefined;
+
+    if (!hasExplicitFilter) {
+        // Se a query estiver vazia, mostramos o catálogo público.
+        whereCondition.isTemplate = true;
     }
 
     return this.treinoModel.findAndCountAll({
@@ -134,6 +145,8 @@ export class TreinoRepository {
         { model: TreinoExercicio, as: 'itens' }, // Inclui os itens de prescrição
         { model: Usuario, as: 'criador', attributes: ['nome', 'tipo'] }, // Inclui o criador
       ],
+      distinct: true, 
+      col: 'id',
       limit: limit,
       offset: offset,
       order: [['nome', 'ASC']],
@@ -159,5 +172,12 @@ export class TreinoRepository {
     return this.treinoExercicioModel.destroy({
       where: { treinoId, exercicioId },
     });
+  }
+
+  /**
+   * Conta o total de treinos (para estatísticas).
+   */
+  async countAll(): Promise<number> {
+    return this.treinoModel.count();
   }
 }

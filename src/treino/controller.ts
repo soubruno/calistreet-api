@@ -7,6 +7,7 @@ import { UpdateTreinoDto } from './dto/update-treino.dto';
 import { Roles } from '../common/decorators/roles.decorator';
 import { TipoUsuario } from '../common/enums/tipo-usuario.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
+import { FindAllTreinosDto } from './dto/find-all-treinos.dto';
 
 @ApiTags('Treinos') 
 @ApiBearerAuth()
@@ -56,18 +57,11 @@ export class TreinoController {
   @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'Lista treinos disponíveis com filtros e paginação.' })
-  @ApiQuery({ name: 'usuarioId', required: false, description: 'ID do usuário para listar treinos personalizados.' })
-  @ApiQuery({ name: 'nivel', required: false, description: 'Filtra por nível de dificuldade.' })
-  @ApiQuery({ name: 'page', required: false })
-  @ApiQuery({ name: 'limit', required: false })
   async findAll(
-    @Query('page') page: number,
-    @Query('limit') limit: number,
-    @Query('nivel') nivel: string,
-    @Query('usuarioId') usuarioId: string,
+    @Query() query: FindAllTreinosDto
   ): Promise<any> {
     // Implementação da listagem completa no Service
-    return this.treinoService.findAll({ page, limit, nivel, usuarioId }); 
+    return this.treinoService.findAll(query); 
   }
 
   // 5. GET /treinos/:id (Visualizar treino - QUERY)
