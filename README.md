@@ -1,15 +1,15 @@
 # Calistreet API
 
 API completa para o aplicativo Calistreet, desenvolvido com **NestJS**, **Sequelize** (ORM), **PostgreSQL** e autenticação **JWT**. 
-Esta API possui paginação, filtros, controle de permissões (RBAC) e documentação OpenAPI (Swagger).
+Esta API possui paginação, filtros, controle de permissões e documentação (Swagger).
 
 ## 🚀 Requisitos para Rodar
 
-Certifique-se de ter instalado em sua máquina:
+Certifique-se de ter instalado e configurado em sua máquina:
 
 1.  **Node.js** (versão LTS ou superior)
 2.  **npm** ou **Yarn**
-3.  **Docker** (ou um servidor **PostgreSQL** rodando localmente)
+3.  **Docker** (com dois containers rodando localmente, um para o **PostgreSQL** e outro para o **Redis**)
 
 ## ⚙️ Configuração do Ambiente
 
@@ -92,7 +92,7 @@ Para interagir com os endpoints protegidos, como os de gerenciamento de usuário
 ```bash
 {
   "email": "admin@calistreet.com",
-  "senha": "SenhaForte123"
+  "senha": "Senha123"
 }
 ```
 
@@ -106,9 +106,9 @@ Para interagir com os endpoints protegidos, como os de gerenciamento de usuário
 
 - Clique nele.
 
-- Na janela que se abre (geralmente chamada BearerAuth), cole o token que você copiou no Passo 2, precedido pela palavra Bearer e um espaço.
+- Na janela que se abre (geralmente chamada BearerAuth), cole o token que você copiou no Passo 2.
 
-  `Exemplo: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+  `Exemplo: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 
 - Clique em "Authorize" e feche a janela. O ícone de cadeado nos endpoints deve agora aparecer fechado, indicando que você está autenticado.
 
