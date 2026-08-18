@@ -123,7 +123,7 @@ Para interagir com os endpoints protegidos, como os de gerenciamento de usuário
 
 - Clique em "Try it out".
 
-- No campo Request body, utilize o JSON abaixo. Note que o campo "tipo" é opcional e, se omitido (ou se você usar "ALUNO"), o usuário será um Aluno: 
+- No campo Request body, utilize o JSON abaixo. O usuário será um aluno se você não especificar o campo "tipo" ou se você preencher com "ALUNO": 
 
 ```bash
 {
