@@ -11,7 +11,7 @@ Certifique-se de ter instalado e configurado em sua máquina:
 2.  **npm** ou **Yarn**
 3.  **Docker** (com dois containers rodando localmente, um para o **PostgreSQL** e outro para o **Redis**)
 
-## ⚙️ Configuração do Ambiente
+## ⚙️ Configuração do Ambiente (IMPORTANTE!)
 
 Siga os passos abaixo para configurar e iniciar o projeto.
 
